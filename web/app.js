@@ -162,23 +162,33 @@ async function refreshBase() {
   if (state.user?.store_id) state.store = state.user.store_id;
   if (!state.stores.some((s) => s.id === state.store)) state.store = state.stores[0]?.id || 2;
 }
-function redirectToPortal(user) {
-  const portal = PORTALS[user.role];
-  sessionStorage.setItem(
-    'se_portal_notice',
-    `Bạn đang đăng nhập với vai trò ${label(user.role)}. Hệ thống đã chuyển về cổng ${portal.title}.`,
-  );
-  location.replace(portal.path);
-}
 function portalLinks(currentRole) {
   return Object.values(PORTALS)
     .filter((p) => p.role !== currentRole)
     .map((p) => `<a href="${p.path}">${esc(p.title)} ↗</a>`)
     .join('');
 }
+function portalFrame(portal, heading, intro, body) {
+  return `<main class="portal-page portal-${portal.role}"><section class="portal-intro"><a href="/shop" class="brand">V0 TECH<span>.</span></a><div><div class="eyebrow">Không gian làm việc</div><span class="portal-symbol" aria-hidden="true">${portal.icon}</span><h1>${esc(portal.title)}</h1><p>${esc(portal.description)}</p><span class="pill">Chỉ dành cho tài khoản ${esc(label(portal.role))}</span></div><small>V0 TECH · Hệ thống bán lẻ đa cửa hàng</small></section><section class="portal-entry"><div class="portal-form"><div class="eyebrow">Đăng nhập đúng vai trò</div><h2>${esc(heading)}</h2><p>${esc(intro)}</p>${body}<div class="portal-switch"><h3>Bạn cần cổng khác?</h3>${portalLinks(portal.role)}</div></div></section></main>`;
+}
 function portalLoginPage(portal) {
   document.title = 'Đăng nhập ' + portal.title + ' · V0 TECH';
-  return `<main class="portal-page portal-${portal.role}"><section class="portal-intro"><a href="/shop" class="brand">V0 TECH<span>.</span></a><div><div class="eyebrow">Không gian làm việc</div><span class="portal-symbol" aria-hidden="true">${portal.icon}</span><h1>${esc(portal.title)}</h1><p>${esc(portal.description)}</p><span class="pill">Chỉ dành cho tài khoản ${esc(label(portal.role))}</span></div><small>V0 TECH · Hệ thống bán lẻ đa cửa hàng</small></section><section class="portal-entry"><div class="portal-form"><div class="eyebrow">Đăng nhập đúng vai trò</div><h2>Đăng nhập ${esc(portal.title)}</h2><p>Dùng tài khoản được cấp cho vai trò này để tiếp tục.</p><form id="portal-login-form">${field('username', 'Tên đăng nhập', 'text', '', 'required autocomplete="username" maxlength="80"')}${field('password', 'Mật khẩu', 'password', '', 'required autocomplete="current-password" maxlength="128"')}<p class="form-error" role="alert"></p><button class="btn primary" type="submit">Đăng nhập</button></form><div class="portal-switch"><h3>Bạn cần cổng khác?</h3>${portalLinks(portal.role)}</div></div></section></main>`;
+  return portalFrame(
+    portal,
+    'Đăng nhập ' + portal.title,
+    'Dùng tài khoản được cấp cho vai trò này để tiếp tục.',
+    `<form id="portal-login-form">${field('username', 'Tên đăng nhập', 'text', '', 'required autocomplete="username" maxlength="80"')}${field('password', 'Mật khẩu', 'password', '', 'required autocomplete="current-password" maxlength="128"')}<p class="form-error" role="alert"></p><button class="btn primary" type="submit">Đăng nhập</button></form>`,
+  );
+}
+function portalMismatchPage(portal, user) {
+  const correct = PORTALS[user.role];
+  document.title = 'Cần mở đúng cổng đăng nhập · V0 TECH';
+  return portalFrame(
+    portal,
+    'Cần mở đúng cổng đăng nhập',
+    'Bạn vẫn ở trang đã mở. Vui lòng chọn cổng phù hợp hoặc đăng xuất để đổi tài khoản.',
+    `<div class="notice warning" role="alert">Bạn đang đăng nhập bằng tài khoản <strong>${esc(user.username)}</strong> với vai trò <strong>${esc(label(user.role))}</strong>. Trang này dành cho vai trò ${esc(label(portal.role))}. Vui lòng mở đúng trang <strong>${esc(correct.title)}</strong>.</div><div class="actions"><a class="btn primary" href="${correct.path}">Mở cổng ${esc(correct.title)} →</a>${btn('Đăng xuất để đổi tài khoản', 'logout')}</div>`,
+  );
 }
 function showFormError(box, error) {
   box.textContent = error.message;
@@ -203,7 +213,7 @@ async function render() {
     const portal = portalForPath(location.pathname);
     if (state.user && state.user.role !== portal.role) {
       if (modal.open) modal.close();
-      redirectToPortal(state.user);
+      $('#app').innerHTML = portalMismatchPage(portal, state.user);
       return;
     }
     if (portal.role !== 'customer' && !state.user) {
@@ -221,11 +231,6 @@ async function render() {
     if (generation !== state.generation) return;
     $('#app').innerHTML = staff ? staffShell(content) : shopShell(content);
     document.title = `${staff ? roles[state.user.role].find((x) => x[0] === state.page)?.[2] : 'Cửa hàng'} · V0 TECH`;
-    const notice = sessionStorage.getItem('se_portal_notice');
-    if (notice) {
-      sessionStorage.removeItem('se_portal_notice');
-      toast(notice);
-    }
   } catch (e) {
     if (generation !== state.generation) return;
     $('#app').innerHTML = (staff ? staffShell : shopShell)(

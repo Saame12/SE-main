@@ -258,7 +258,7 @@ test('Each anonymous staff portal has its own login, role description and mobile
     await context.close();
   }
 });
-test('Wrong-role login issues no session; correct portal login, wrong URL redirect and logout are consistent', async () => {
+test('Wrong-role login issues no session; correct portal login, wrong URL stays put until the user chooses a portal', async () => {
   const context = await browser.newContext();
   const page = await context.newPage();
   page.setDefaultTimeout(8000);
@@ -271,6 +271,7 @@ test('Wrong-role login issues no session; correct portal login, wrong URL redire
     .getByText(/Tài khoản này thuộc cổng Quản trị trụ sở/)
     .waitFor();
   assert.equal((await context.cookies()).filter((c) => c.name === 'se_session').length, 0);
+  assert.equal(new URL(page.url()).pathname, '/employee.html');
   await page.getByRole('link', { name: 'Mở cổng đăng nhập phù hợp →' }).click();
   assert.equal(new URL(page.url()).pathname, '/admin.html');
   await page.getByLabel('Tên đăng nhập').fill('hq');
@@ -278,26 +279,41 @@ test('Wrong-role login issues no session; correct portal login, wrong URL redire
   await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
   await page.locator('.sidebar').waitFor();
   await page.goto(base + '/employee.html');
-  await page.waitForURL('**/admin.html');
+  await page.getByRole('heading', { name: 'Cần mở đúng cổng đăng nhập', exact: true }).waitFor();
+  assert.equal(new URL(page.url()).pathname, '/employee.html');
+  assert.equal(await page.locator('.sidebar').count(), 0);
+  assert.match(await page.getByRole('alert').innerText(), /Vui lòng mở đúng trang Quản trị trụ sở/);
+  await page.reload();
+  await page.getByRole('heading', { name: 'Cần mở đúng cổng đăng nhập', exact: true }).waitFor();
+  assert.equal(new URL(page.url()).pathname, '/employee.html');
+  await page.screenshot({ path: '.runtime/qa/wrong-portal.png', fullPage: true });
+  await page.getByRole('link', { name: 'Mở cổng Quản trị trụ sở →', exact: true }).click();
   await page.locator('.sidebar').waitFor();
-  assert.match(await page.getByRole('status').innerText(), /chuyển về cổng Quản trị trụ sở/);
-  await page.getByRole('button', { name: 'Đăng xuất', exact: true }).click();
-  await page.getByRole('heading', { name: 'Đăng nhập Quản trị trụ sở', exact: true }).waitFor();
   assert.equal(new URL(page.url()).pathname, '/admin.html');
+  await page.goto(base + '/employee.html');
+  await page.getByRole('button', { name: 'Đăng xuất để đổi tài khoản', exact: true }).click();
+  await page.getByRole('heading', { name: 'Đăng nhập Nhân viên cửa hàng', exact: true }).waitFor();
+  assert.equal(new URL(page.url()).pathname, '/employee.html');
   await context.close();
 });
-test('Expired and cross-tab changed sessions return to the appropriate portal', async () => {
+test('Expired and cross-tab changed sessions never navigate without a user action', async () => {
   const { page, context } = await pageFor('employee');
   await context.request.post(base + '/api/auth/login', {
     headers: { 'X-Requested-With': 'SE' },
     data: { username: 'manager', password: original.DEMO_PASSWORD, portal_role: 'manager' },
   });
   await page.evaluate(() => window.dispatchEvent(new Event('focus')));
-  await page.waitForURL('**/manager.html');
-  await page.getByRole('heading', { name: 'Tổng quan kinh doanh', exact: true }).waitFor();
+  await page.getByRole('heading', { name: 'Cần mở đúng cổng đăng nhập', exact: true }).waitFor();
+  assert.equal(new URL(page.url()).pathname, '/employee.html');
+  assert.match(
+    await page.getByRole('alert').innerText(),
+    /Vui lòng mở đúng trang Quản lý cửa hàng/,
+  );
+  assert.equal(await page.locator('.sidebar').count(), 0);
   await context.clearCookies();
   await page.reload();
-  await page.getByRole('heading', { name: 'Đăng nhập Quản lý cửa hàng', exact: true }).waitFor();
+  await page.getByRole('heading', { name: 'Đăng nhập Nhân viên cửa hàng', exact: true }).waitFor();
+  assert.equal(new URL(page.url()).pathname, '/employee.html');
   assert.equal(await page.locator('.sidebar').count(), 0);
   await context.close();
 });

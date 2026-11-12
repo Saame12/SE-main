@@ -84,10 +84,14 @@ Các kiểm tra xác nhận chức năng bản đồ án cục bộ, không thay
 - API kiểm tra role trước khi cấp phiên, mật khẩu sai không tiết lộ cổng tài khoản.
 - Đăng nhập thành công thay thế phiên cũ, không để token cũ tiếp tục hoạt động.
 - Bốn cổng nhân sự có tiêu đề/form riêng, không hiện giao diện khách khi chưa đăng nhập; kiểm tra cả mobile.
-- Sai role hiển thị lỗi và liên kết đúng; đã có phiên mà mở nhầm URL tự chuyển về cổng phù hợp.
-- Đăng xuất/hết phiên trở về form cổng đó; đổi phiên ở tab khác được phát hiện khi quay lại tab.
+- Sai role hiển thị lỗi và liên kết đúng; đã có phiên mà mở nhầm URL giữ nguyên địa chỉ, hiển thị thông báo cần mở đúng cổng. Chỉ chuyển trang khi người dùng bấm liên kết.
+- Đăng xuất/hết phiên trở về form tại URL đang mở; đổi phiên ở tab khác được phát hiện khi quay lại tab và chỉ hiển thị thông báo nếu sai vai trò, không tự chuyển trang.
 - Toàn bộ 30 kiểm thử đạt sau thay đổi; các luồng bán hàng hiện có tiếp tục đạt.
 
 ## Kiểm tra bộ dữ liệu demo
 
 Kiểm thử tích hợp bổ sung cho seed DEMO xác nhận 10 sản phẩm/12 đơn/3 ưu đãi/5 bổ sung, tồn kho bằng tổng stock_movements, commission và payment hợp lệ, chạy lại không tạo trùng hoặc reset thao tác thử và sản phẩm cũ không bị ảnh hưởng. Toàn bộ 23 kiểm thử tích hợp đạt sau khi thêm seed.
+
+## Hồi quy không tự chuyển cổng
+
+8 kiểm thử trình duyệt đã đạt sau thay đổi: sai mật khẩu/role không điều hướng; mở sai cổng khi đã đăng nhập hoặc đổi tài khoản ở tab khác vẫn giữ URL và chỉ hiện thông báo/liên kết; tải lại không tự chuyển; người dùng chủ động mở liên kết hoặc đăng xuất để đổi tài khoản.

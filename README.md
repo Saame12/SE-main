@@ -45,9 +45,9 @@ Khách hàng đăng nhập/đăng ký tại trang mua sắm. Các cổng nhân s
 | `/employee.html` | `employee` — Nhân viên cửa hàng |
 | `/shop`, `/`, `/index3.html`, `/login` | `customer` — Khách hàng |
 
-Khi chưa đăng nhập, cổng nhân sự hiển thị form dành riêng cho vai trò đó. Form gửi `portal_role`; API kiểm tra mật khẩu rồi đối chiếu vai trò trước khi cấp phiên. Tài khoản sai vai trò bị từ chối kèm liên kết tới cổng phù hợp. Nếu đã đăng nhập và mở sai cổng, hệ thống chuyển về URL đúng và thông báo lý do. Đăng xuất hoặc hết phiên trở về trang đăng nhập của chính cổng đang mở.
+Khi chưa đăng nhập, cổng nhân sự hiển thị form dành riêng cho vai trò đó. Form gửi `portal_role`; API kiểm tra mật khẩu rồi đối chiếu vai trò trước khi cấp phiên. Tài khoản sai vai trò bị từ chối kèm liên kết tới cổng phù hợp. Nếu đã đăng nhập và mở sai cổng, hệ thống giữ nguyên URL, thông báo cần mở đúng trang và cung cấp liên kết để người dùng tự chọn. Hệ thống không tự chuyển cổng. Đăng xuất hoặc hết phiên trở về trang đăng nhập của chính cổng đang mở.
 
-Các tab cùng trình duyệt vẫn dùng chung cookie phiên. Khi đổi tài khoản ở một tab, tab khác kiểm tra lại phiên khi được kích hoạt và chuyển về cổng đúng. Để dùng nhiều vai trò đồng thời, dùng các hồ sơ trình duyệt/cửa sổ riêng tư tách biệt.
+Các tab cùng trình duyệt vẫn dùng chung cookie phiên. Khi đổi tài khoản ở một tab, tab khác kiểm tra lại phiên khi được kích hoạt, giữ nguyên URL và thông báo nếu vai trò không phù hợp. Để dùng nhiều vai trò đồng thời, dùng các hồ sơ trình duyệt/cửa sổ riêng tư tách biệt.
 
 ## Dữ liệu mẫu để thử
 
