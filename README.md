@@ -49,6 +49,10 @@ Khi chưa đăng nhập, cổng nhân sự hiển thị form dành riêng cho va
 
 Các tab cùng trình duyệt vẫn dùng chung cookie phiên. Khi đổi tài khoản ở một tab, tab khác kiểm tra lại phiên khi được kích hoạt và chuyển về cổng đúng. Để dùng nhiều vai trò đồng thời, dùng các hồ sơ trình duyệt/cửa sổ riêng tư tách biệt.
 
+## Dữ liệu mẫu để thử
+
+Chạy `npm.cmd run db:seed` để thêm 10 sản phẩm, 12 đơn hàng, 3 khuyến mãi, 3 khách hàng và 5 yêu cầu bổ sung kho có nhãn DEMO. Script không sửa sản phẩm/tồn kho cũ và chạy lại không tạo trùng hoặc reset các bước đã thử. Xem [kịch bản theo từng mã đơn](docs/DEMO_DATA.md).
+
 ## Các luồng đã triển khai
 
 - Công ty, cửa hàng, danh mục, ngành hàng, thương hiệu, nhân viên theo phạm vi; tạo/sửa/tạm dừng thay vì xóa lịch sử.

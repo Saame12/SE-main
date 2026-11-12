@@ -1,3 +1,4 @@
+import { seedDemo } from '../scripts/seed-demo.js';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
@@ -580,4 +581,63 @@ test('Successful role-specific login rotates an existing session', async () => {
   });
   assert.equal(second.status, 200);
   assert.equal(await ok('portal', '/auth/me'), null);
+});
+
+test('Demo dataset is transactional, stock-consistent, replay-safe and preserves existing products', async () => {
+  const [before] = await pool.query(
+    "SELECT i.* FROM inventory i JOIN products p ON p.id=i.product_id WHERE p.sku NOT LIKE 'DEMO-%' ORDER BY i.location_id,i.product_id",
+  );
+  const result = await seedDemo(pool, original.DEMO_PASSWORD);
+  assert.equal(result.created, true);
+  assert.equal(result.orders, 12);
+  assert.equal(result.products, 10);
+  const [after] = await pool.query(
+    "SELECT i.* FROM inventory i JOIN products p ON p.id=i.product_id WHERE p.sku NOT LIKE 'DEMO-%' ORDER BY i.location_id,i.product_id",
+  );
+  assert.deepEqual(after, before);
+  const [[counts]] = await pool.query(
+    "SELECT (SELECT COUNT(*) FROM orders WHERE code LIKE 'DEMO-%') AS orders,(SELECT COUNT(*) FROM products WHERE sku LIKE 'DEMO-%') AS products,(SELECT COUNT(*) FROM restock_requests WHERE code LIKE 'DEMO-%') AS restocks,(SELECT COUNT(*) FROM promotions WHERE code LIKE 'DEMO%') AS promotions",
+  );
+  assert.deepEqual(counts, { orders: 12, products: 10, restocks: 5, promotions: 3 });
+  const [inventory] = await pool.query(
+    "SELECT i.location_id,i.product_id,i.quantity,COALESCE(SUM(m.delta),0) AS recorded FROM inventory i JOIN products p ON p.id=i.product_id LEFT JOIN stock_movements m ON m.location_id=i.location_id AND m.product_id=i.product_id WHERE p.sku LIKE 'DEMO-%' GROUP BY i.location_id,i.product_id,i.quantity",
+  );
+  assert(inventory.every((row) => row.quantity === Number(row.recorded)));
+  const [orders] = await pool.query(
+    "SELECT o.*,p.status AS payment_status FROM orders o JOIN payments p ON p.order_id=o.id WHERE o.code LIKE 'DEMO-%'",
+  );
+  assert(
+    orders.filter((o) => o.status === 'finished').every((o) => o.payment_status === 'verified'),
+  );
+  assert(
+    orders.some(
+      (o) =>
+        o.status === 'received' && o.payment_method === 'cod' && o.payment_status === 'pending',
+    ),
+  );
+  const [commissions] = await pool.query(
+    "SELECT c.*,o.status AS order_status,o.total FROM commissions c JOIN orders o ON o.id=c.order_id WHERE o.code LIKE 'DEMO-%'",
+  );
+  assert.equal(commissions.length, 5);
+  assert(
+    commissions.every(
+      (c) => Number(c.amount) === Math.floor((Number(c.total) * c.rate_bps) / 10000),
+    ),
+  );
+  assert(commissions.some((c) => c.status === 'reversed' && c.order_status === 'returned'));
+  const [[product]] = await pool.query("SELECT id FROM products WHERE sku='DEMO-CPU-I5'");
+  await ok('hq', '/inventory/adjust', 'POST', {
+    location_id: 2,
+    product_id: product.id,
+    quantity: 7,
+    reason: 'Verify seed does not reset user testing',
+  });
+  assert.equal((await seedDemo(pool, original.DEMO_PASSWORD)).created, false);
+  const [[stock]] = await pool.execute(
+    'SELECT quantity FROM inventory WHERE location_id=2 AND product_id=?',
+    [product.id],
+  );
+  assert.equal(stock.quantity, 7);
+  const [[again]] = await pool.query("SELECT COUNT(*) AS n FROM orders WHERE code LIKE 'DEMO-%'");
+  assert.equal(again.n, 12);
 });

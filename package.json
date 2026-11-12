@@ -17,7 +17,8 @@
     "test:integration": "node --env-file=.env --test --test-concurrency=1 tests/integration.test.js",
     "test:browser": "node --env-file=.env --test --test-concurrency=1 tests/browser.test.js",
     "format": "prettier --write \"shared/**/*.js\" \"server/**/*.js\" \"scripts/**/*.js\" \"tests/**/*.js\" \"web/**/*.{js,css,html}\"",
-    "format:check": "prettier --check \"shared/**/*.js\" \"server/**/*.js\" \"scripts/**/*.js\" \"tests/**/*.js\" \"web/**/*.{js,css,html}\""
+    "format:check": "prettier --check \"shared/**/*.js\" \"server/**/*.js\" \"scripts/**/*.js\" \"tests/**/*.js\" \"web/**/*.{js,css,html}\"",
+    "db:seed": "node --env-file=.env scripts/seed-demo.js"
   },
   "dependencies": {
     "express": "^5.1.0",

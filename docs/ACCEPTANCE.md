@@ -4,7 +4,7 @@
 
 Ngày thực hiện: 12/11/2026. Môi trường: Node.js 24.20.0, MySQL Community 8.0.46; Microsoft Edge headless qua Playwright. Database kiểm thử độc lập `se_test_<timestamp>` được tạo, seed và dọn dẹp mỗi lần; database `se_store` không nhận dữ liệu đơn hàng của kiểm thử.
 
-Bộ tự động gồm 22 bài tích hợp và 8 kịch bản trình duyệt. Chạy lại bằng `npm.cmd test`. Ảnh desktop/mobile ở `.runtime/qa/`; ảnh không chứa mật khẩu và không được đưa lên Git. Kiểm tra cú pháp bằng `npm.cmd run check`.
+Bộ tự động gồm 23 bài tích hợp và 8 kịch bản trình duyệt. Chạy lại bằng `npm.cmd test`. Ảnh desktop/mobile ở `.runtime/qa/`; ảnh không chứa mật khẩu và không được đưa lên Git. Kiểm tra cú pháp bằng `npm.cmd run check`.
 
 ### Nhóm kiểm tra tích hợp
 
@@ -87,3 +87,7 @@ Các kiểm tra xác nhận chức năng bản đồ án cục bộ, không thay
 - Sai role hiển thị lỗi và liên kết đúng; đã có phiên mà mở nhầm URL tự chuyển về cổng phù hợp.
 - Đăng xuất/hết phiên trở về form cổng đó; đổi phiên ở tab khác được phát hiện khi quay lại tab.
 - Toàn bộ 30 kiểm thử đạt sau thay đổi; các luồng bán hàng hiện có tiếp tục đạt.
+
+## Kiểm tra bộ dữ liệu demo
+
+Kiểm thử tích hợp bổ sung cho seed DEMO xác nhận 10 sản phẩm/12 đơn/3 ưu đãi/5 bổ sung, tồn kho bằng tổng stock_movements, commission và payment hợp lệ, chạy lại không tạo trùng hoặc reset thao tác thử và sản phẩm cũ không bị ảnh hưởng. Toàn bộ 23 kiểm thử tích hợp đạt sau khi thêm seed.
