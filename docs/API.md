@@ -8,7 +8,7 @@ Mọi API ghi yêu cầu JSON và header `X-Requested-With: SE`. Trình duyệt 
 | --- | --- | --- |
 | GET /api/health | Công khai | Kiểm tra DB và migration 2.0 |
 | POST /api/auth/register | Công khai | name, username, password, phone; chỉ tạo customer |
-| POST /api/auth/login | Công khai | username/password; cookie phiên HttpOnly |
+| POST /api/auth/login | Công khai | username/password, portal_role tùy chọn cho API; mọi form web gửi role của cổng. Sai role trả 403/portal_url, không cấp phiên; đúng role cấp cookie HttpOnly |
 | GET /api/auth/me | Công khai | User hiện tại, không có password_hash |
 | POST /api/auth/logout | Phiên hiện tại | Thu hồi token phía server |
 | GET /api/company, /stores, /categories, /brands | Công khai | Thông tin danh mục và cửa hàng |

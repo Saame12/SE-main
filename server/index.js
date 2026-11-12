@@ -70,6 +70,7 @@ export function createApp(pool) {
     '/shop',
   ])
     app.get(route, (_req, res) => res.sendFile(path.join(root, 'web/index.html')));
+  app.get('/assets/portals.js', (_req, res) => res.sendFile(path.join(root, 'shared/portals.js')));
   app.use('/assets', express.static(path.join(root, 'web'), { index: false, dotfiles: 'deny' }));
   app.use('/IMG', express.static(path.join(root, 'IMG'), { index: false, dotfiles: 'deny' }));
   app.use((error, _req, res, _next) => {

@@ -1,3 +1,4 @@
+import { PORTALS } from '../../shared/portals.js';
 import express from 'express';
 import { randomBytes } from 'node:crypto';
 import {
@@ -27,6 +28,11 @@ export function authModule(pool) {
   router.post('/login', async (req, res) => {
     const username = text(req.body.username, 'Tên đăng nhập', 80).toLowerCase();
     const password = text(req.body.password, 'Mật khẩu', 128);
+    const requestedRole = req.body.portal_role;
+    assert(
+      requestedRole === undefined || Object.hasOwn(PORTALS, requestedRole),
+      'Cổng đăng nhập không hợp lệ.',
+    );
     const key = `${req.ip}:${username}`;
     const now = Date.now();
     let a = attempts.get(key);
@@ -43,7 +49,17 @@ export function authModule(pool) {
       'Tên đăng nhập hoặc mật khẩu không đúng.',
       401,
     );
+    attempts.delete(key);
+    if (requestedRole && requestedRole !== user.role) {
+      const portal = PORTALS[user.role];
+      return res.status(403).json({
+        message: `Tài khoản này thuộc cổng ${portal.title}. Vui lòng đăng nhập tại đúng cổng.`,
+        portal_url: portal.path,
+      });
+    }
     const result = await transaction(pool, async (c) => {
+      if (req.sessionHash)
+        await c.execute('DELETE FROM sessions WHERE token_hash=?', [req.sessionHash]);
       await audit(c, user, 'login', 'user', user.id);
       return session(c, user, res);
     });

@@ -4,7 +4,7 @@
 
 Ngày thực hiện: 12/11/2026. Môi trường: Node.js 24.20.0, MySQL Community 8.0.46; Microsoft Edge headless qua Playwright. Database kiểm thử độc lập `se_test_<timestamp>` được tạo, seed và dọn dẹp mỗi lần; database `se_store` không nhận dữ liệu đơn hàng của kiểm thử.
 
-Bộ tự động gồm 20 bài tích hợp và 5 kịch bản trình duyệt. Chạy lại bằng `npm.cmd test`. Ảnh desktop/mobile ở `.runtime/qa/`; ảnh không chứa mật khẩu và không được đưa lên Git. Kiểm tra cú pháp bằng `npm.cmd run check`.
+Bộ tự động gồm 22 bài tích hợp và 8 kịch bản trình duyệt. Chạy lại bằng `npm.cmd test`. Ảnh desktop/mobile ở `.runtime/qa/`; ảnh không chứa mật khẩu và không được đưa lên Git. Kiểm tra cú pháp bằng `npm.cmd run check`.
 
 ### Nhóm kiểm tra tích hợp
 
@@ -78,3 +78,12 @@ Bật MySQL80, chạy `npm.cmd run db:setup`, mở http://127.0.0.1:3308. Dùng 
 ## Giới hạn đánh giá
 
 Các kiểm tra xác nhận chức năng bản đồ án cục bộ, không thay thế chứng nhận bảo mật hay kiểm thử tải. Nguồn chưa có SLA, bộ test chấp nhận của giảng viên hoặc quy tắc tích hợp thật. Các quy ước ở DECISIONS.md cần được rà soát trước khi sử dụng nghiệp vụ thật.
+
+## Hồi quy đăng nhập theo cổng
+
+- API kiểm tra role trước khi cấp phiên, mật khẩu sai không tiết lộ cổng tài khoản.
+- Đăng nhập thành công thay thế phiên cũ, không để token cũ tiếp tục hoạt động.
+- Bốn cổng nhân sự có tiêu đề/form riêng, không hiện giao diện khách khi chưa đăng nhập; kiểm tra cả mobile.
+- Sai role hiển thị lỗi và liên kết đúng; đã có phiên mà mở nhầm URL tự chuyển về cổng phù hợp.
+- Đăng xuất/hết phiên trở về form cổng đó; đổi phiên ở tab khác được phát hiện khi quay lại tab.
+- Toàn bộ 30 kiểm thử đạt sau thay đổi; các luồng bán hàng hiện có tiếp tục đạt.

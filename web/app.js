@@ -1,3 +1,4 @@
+import { PORTALS, portalForPath } from './portals.js';
 import {
   $,
   esc,
@@ -55,7 +56,11 @@ async function api(path, options = {}) {
       state.user = null;
       await render();
     }
-    throw new Error(data.message || 'Không thể xử lý yêu cầu.');
+    const error = new Error(data.message || 'Không thể xử lý yêu cầu.');
+    error.portalUrl = Object.values(PORTALS).some((p) => p.path === data.portal_url)
+      ? data.portal_url
+      : null;
+    throw error;
   }
   return data;
 }
@@ -125,7 +130,7 @@ function head(title, description, tools = '') {
 function staffShell(content) {
   const menu = roles[state.user.role];
   const name = menu.find((x) => x[0] === state.page)?.[2] || '';
-  return `<div class="shell"><aside class="sidebar"><a href="#${menu[0][0]}" class="brand">V0 TECH<span>.</span></a><div class="workspace-tag">Retail operating system</div><nav class="nav">${menu.map(([id, icon, title]) => `<a href="#${id}" class="${id === state.page ? 'active' : ''}"><span class="icon" aria-hidden="true">${icon}</span>${esc(title)}</a>`).join('')}</nav><div class="side-bottom"><span class="pill blue">PHIÊN BẢN 2.0</span><p>Dữ liệu tập trung<br>Phân quyền theo cửa hàng</p><a href="/shop">Mở trang khách hàng ↗</a></div></aside><div><header class="topbar"><span class="crumb">Không gian làm việc / ${esc(name)}</span><div class="top-actions">${
+  return `<div class="shell"><aside class="sidebar"><a href="#${menu[0][0]}" class="brand">V0 TECH<span>.</span></a><div class="workspace-tag">Retail operating system</div><nav class="nav">${menu.map(([id, icon, title]) => `<a href="#${id}" class="${id === state.page ? 'active' : ''}"><span class="icon" aria-hidden="true">${icon}</span>${esc(title)}</a>`).join('')}</nav><div class="side-bottom"><span class="pill blue">PHIÊN BẢN 2.0</span><p>Dữ liệu tập trung<br>Phân quyền theo cửa hàng</p><button class="btn small" type="button" data-action="logout">Đổi tài khoản</button></div></aside><div><header class="topbar"><span class="crumb">Không gian làm việc / ${esc(name)}</span><div class="top-actions">${
     state.user.role === 'hq'
       ? `<select data-store aria-label="Chọn cửa hàng">${options()
           .map(
@@ -157,17 +162,70 @@ async function refreshBase() {
   if (state.user?.store_id) state.store = state.user.store_id;
   if (!state.stores.some((s) => s.id === state.store)) state.store = state.stores[0]?.id || 2;
 }
+function redirectToPortal(user) {
+  const portal = PORTALS[user.role];
+  sessionStorage.setItem(
+    'se_portal_notice',
+    `Bạn đang đăng nhập với vai trò ${label(user.role)}. Hệ thống đã chuyển về cổng ${portal.title}.`,
+  );
+  location.replace(portal.path);
+}
+function portalLinks(currentRole) {
+  return Object.values(PORTALS)
+    .filter((p) => p.role !== currentRole)
+    .map((p) => `<a href="${p.path}">${esc(p.title)} ↗</a>`)
+    .join('');
+}
+function portalLoginPage(portal) {
+  document.title = 'Đăng nhập ' + portal.title + ' · V0 TECH';
+  return `<main class="portal-page portal-${portal.role}"><section class="portal-intro"><a href="/shop" class="brand">V0 TECH<span>.</span></a><div><div class="eyebrow">Không gian làm việc</div><span class="portal-symbol" aria-hidden="true">${portal.icon}</span><h1>${esc(portal.title)}</h1><p>${esc(portal.description)}</p><span class="pill">Chỉ dành cho tài khoản ${esc(label(portal.role))}</span></div><small>V0 TECH · Hệ thống bán lẻ đa cửa hàng</small></section><section class="portal-entry"><div class="portal-form"><div class="eyebrow">Đăng nhập đúng vai trò</div><h2>Đăng nhập ${esc(portal.title)}</h2><p>Dùng tài khoản được cấp cho vai trò này để tiếp tục.</p><form id="portal-login-form">${field('username', 'Tên đăng nhập', 'text', '', 'required autocomplete="username" maxlength="80"')}${field('password', 'Mật khẩu', 'password', '', 'required autocomplete="current-password" maxlength="128"')}<p class="form-error" role="alert"></p><button class="btn primary" type="submit">Đăng nhập</button></form><div class="portal-switch"><h3>Bạn cần cổng khác?</h3>${portalLinks(portal.role)}</div></div></section></main>`;
+}
+function showFormError(box, error) {
+  box.textContent = error.message;
+  if (error.portalUrl) {
+    const link = document.createElement('a');
+    link.href = error.portalUrl;
+    link.textContent = 'Mở cổng đăng nhập phù hợp →';
+    link.className = 'portal-error-link';
+    box.append(document.createElement('br'), link);
+  }
+}
 async function render() {
   const generation = ++state.generation;
-  const staff = isStaff() && !location.pathname.startsWith('/shop');
-  const available = staff ? roles[state.user.role].map((x) => x[0]) : ['shop', 'orders', 'account'];
-  state.page = location.hash.slice(1) || available[0];
-  if (!available.includes(state.page)) state.page = available[0];
+  let staff = false;
   try {
+    const current = await api('/auth/me');
+    if (generation !== state.generation) return;
+    if (current?.id !== state.user?.id) {
+      state.user = current;
+      await refreshBase();
+    } else state.user = current;
+    const portal = portalForPath(location.pathname);
+    if (state.user && state.user.role !== portal.role) {
+      if (modal.open) modal.close();
+      redirectToPortal(state.user);
+      return;
+    }
+    if (portal.role !== 'customer' && !state.user) {
+      if (modal.open) modal.close();
+      $('#app').innerHTML = portalLoginPage(portal);
+      return;
+    }
+    staff = isStaff();
+    const available = staff
+      ? roles[state.user.role].map((x) => x[0])
+      : ['shop', 'orders', 'account'];
+    state.page = location.hash.slice(1) || available[0];
+    if (!available.includes(state.page)) state.page = available[0];
     const content = await views[state.page]();
     if (generation !== state.generation) return;
     $('#app').innerHTML = staff ? staffShell(content) : shopShell(content);
     document.title = `${staff ? roles[state.user.role].find((x) => x[0] === state.page)?.[2] : 'Cửa hàng'} · V0 TECH`;
+    const notice = sessionStorage.getItem('se_portal_notice');
+    if (notice) {
+      sessionStorage.removeItem('se_portal_notice');
+      toast(notice);
+    }
   } catch (e) {
     if (generation !== state.generation) return;
     $('#app').innerHTML = (staff ? staffShell : shopShell)(
@@ -175,6 +233,7 @@ async function render() {
     );
   }
 }
+
 const views = {
   async shop() {
     state.products = await api('/products?store_id=' + state.store);
@@ -666,14 +725,14 @@ function readLines(form) {
 }
 function loginDialog(register = false) {
   const body = `<div class="login-box"><span class="brand">V0 TECH<span>.</span></span><p>${register ? 'Tạo tài khoản khách hàng để đặt hàng và theo dõi đơn.' : 'Đăng nhập để tiếp tục công việc hoặc theo dõi đơn hàng.'}</p>${register ? field('name', 'Họ tên', 'text', '', 'required maxlength="160"') + field('phone', 'Số điện thoại', 'tel', '', 'required maxlength="30"') : ''}${field('username', 'Tên đăng nhập', 'text', '', 'required autocomplete="username" maxlength="80"')}${field('password', 'Mật khẩu', 'password', '', 'required minlength="' + (register ? 10 : 1) + '" maxlength="128" autocomplete="' + (register ? 'new-password' : 'current-password') + '"')}<p>${register ? 'Đã có tài khoản?' : 'Khách hàng mới?'} ${btn(register ? 'Đăng nhập' : 'Đăng ký', register ? 'login' : 'register', '', 'ghost small')}</p></div>`;
-  dialog(register ? 'Tạo tài khoản khách hàng' : 'Đăng nhập hệ thống', body, async (data) => {
+  dialog(register ? 'Tạo tài khoản khách hàng' : 'Đăng nhập khách hàng', body, async (data) => {
     state.user = await api('/auth/' + (register ? 'register' : 'login'), {
       method: 'POST',
-      body: Object.fromEntries(data),
+      body: { ...Object.fromEntries(data), ...(!register ? { portal_role: 'customer' } : {}) },
     });
     await refreshBase();
     location.hash = isStaff() ? roles[state.user.role][0][0] : 'shop';
-    if (isStaff() && location.pathname.startsWith('/shop')) location.href = '/';
+
     toast('Đăng nhập thành công.');
   });
   $('#dialog-form button[type=submit]', modal).textContent = register
@@ -906,7 +965,8 @@ async function dispatch(action, id, target) {
     case 'logout':
       await api('/auth/logout', { method: 'POST', body: {} });
       state.user = null;
-      location.hash = 'shop';
+      history.replaceState(null, '', location.pathname);
+      if (modal.open) modal.close();
       await refreshBase();
       await render();
       break;
@@ -1199,7 +1259,7 @@ document.addEventListener('click', async (event) => {
     await dispatch(target.dataset.action, target.dataset.id, target);
   } catch (error) {
     const box = modal.open ? $('.form-error', modal) : null;
-    if (box) box.textContent = error.message;
+    if (box) showFormError(box, error);
     else toast(error.message);
   }
 });
@@ -1215,6 +1275,15 @@ document.addEventListener('submit', async (event) => {
   if (error) error.textContent = '';
   try {
     const data = new FormData(form);
+    if (form.id === 'portal-login-form') {
+      state.user = await api('/auth/login', {
+        method: 'POST',
+        body: { ...Object.fromEntries(data), portal_role: portalForPath(location.pathname).role },
+      });
+      await refreshBase();
+      toast('Đăng nhập thành công.');
+      await render();
+    }
     if (form.id === 'dialog-form' && modalSubmit) {
       const current = modalSubmit;
       const keep = await current(data, form);
@@ -1242,7 +1311,7 @@ document.addEventListener('submit', async (event) => {
       await orderDetail(o.id);
     }
   } catch (e) {
-    if (error && error.isConnected) error.textContent = e.message;
+    if (error && error.isConnected) showFormError(error, e);
     else toast(e.message);
   } finally {
     if (submit?.isConnected) submit.disabled = false;
@@ -1295,12 +1364,31 @@ document.addEventListener('input', (event) => {
   if (el.matches('[data-product-filter]')) filterProducts();
 });
 window.addEventListener('hashchange', () => render());
+async function syncSession() {
+  if (document.visibilityState !== 'visible') return;
+  try {
+    const user = await api('/auth/me');
+    if (user?.id !== state.user?.id || user?.role !== state.user?.role) {
+      state.user = user;
+      if (modal.open) modal.close();
+      await refreshBase();
+      await render();
+    }
+  } catch {
+    /* Keep the current form intact during a transient network failure. */
+  }
+}
+window.addEventListener('focus', syncSession);
+document.addEventListener('visibilitychange', syncSession);
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) syncSession();
+});
 async function boot() {
   try {
     state.user = await api('/auth/me');
     await refreshBase();
     await render();
-    if (location.pathname === '/login') loginDialog();
+    if (location.pathname === '/login' && !state.user) loginDialog();
   } catch (e) {
     $('#app').innerHTML =
       `<main class="boot"><span class="brand">V0 TECH<span>.</span></span><h1>Chưa kết nối được hệ thống</h1><p>${esc(e.message)}</p>${btn('Thử lại', 'refresh')}</main>`;

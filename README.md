@@ -36,7 +36,19 @@ Nếu cổng web bị chiếm, kiểm tra tiến trình đang dùng cổng trư�
 
 Mật khẩu demo được tạo ngẫu nhiên khi chạy migration và lưu tại **`DEMO_PASSWORD` trong `.env`**. Không ghi mật khẩu vào README hoặc Git. Nếu tự đặt `DEMO_PASSWORD` trước lần setup đầu tiên, dùng ít nhất 10 ký tự. Thay đổi biến này sau migration không đặt lại mật khẩu tài khoản đã tồn tại. Trụ sở có thể sửa mật khẩu của các tài khoản nhân viên khác trong màn hình Nhân viên.
 
-Khách hàng cũng có thể đăng ký tài khoản mới. Nhấn Đăng nhập trên trang chủ, sau khi đăng nhập hệ thống mở đúng không gian theo vai trò. `/shop` mở cửa hàng, `/login` mở đăng nhập. Các đường dẫn `/admin.html`, `/manager.html`, `/employee.html`, `/warehouse.html` dùng cùng giao diện và quyền do backend xác định; đường dẫn không cấp quyền.
+Khách hàng đăng nhập/đăng ký tại trang mua sắm. Các cổng nhân sự có trang đăng nhập riêng:
+
+| Đường dẫn | Vai trò tài khoản |
+| --- | --- |
+| `/admin.html` | `hq` — Quản trị trụ sở |
+| `/warehouse.html` | `warehouse` — Quản lý kho |
+| `/manager.html` | `manager` — Quản lý cửa hàng |
+| `/employee.html` | `employee` — Nhân viên cửa hàng |
+| `/shop`, `/`, `/index3.html`, `/login` | `customer` — Khách hàng |
+
+Khi chưa đăng nhập, cổng nhân sự hiển thị form dành riêng cho vai trò đó. Form gửi `portal_role`; API kiểm tra mật khẩu rồi đối chiếu vai trò trước khi cấp phiên. Tài khoản sai vai trò bị từ chối kèm liên kết tới cổng phù hợp. Nếu đã đăng nhập và mở sai cổng, hệ thống chuyển về URL đúng và thông báo lý do. Đăng xuất hoặc hết phiên trở về trang đăng nhập của chính cổng đang mở.
+
+Các tab cùng trình duyệt vẫn dùng chung cookie phiên. Khi đổi tài khoản ở một tab, tab khác kiểm tra lại phiên khi được kích hoạt và chuyển về cổng đúng. Để dùng nhiều vai trò đồng thời, dùng các hồ sơ trình duyệt/cửa sổ riêng tư tách biệt.
 
 ## Các luồng đã triển khai
 

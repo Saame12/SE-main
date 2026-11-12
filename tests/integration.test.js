@@ -529,3 +529,55 @@ test('Manager-created staff cannot escalate role or switch store; invalid report
   });
   assert.equal(csrf.status, 403);
 });
+
+test('Portal role is verified before a session is issued; incorrect password reveals no role', async () => {
+  for (const [username, portal] of [
+    ['hq', 'employee'],
+    ['warehouse', 'manager'],
+    ['manager', 'hq'],
+    ['employee', 'warehouse'],
+    ['customer', 'employee'],
+  ]) {
+    const r = await call(null, '/auth/login', 'POST', {
+      username,
+      password: original.DEMO_PASSWORD,
+      portal_role: portal,
+    });
+    assert.equal(r.status, 403);
+    assert(r.data.portal_url);
+    assert.equal(r.response.headers.get('set-cookie'), null);
+  }
+  const wrong = await call(null, '/auth/login', 'POST', {
+    username: 'hq',
+    password: 'wrong-password',
+    portal_role: 'employee',
+  });
+  assert.equal(wrong.status, 401);
+  assert(!wrong.data.portal_url);
+  assert.equal(
+    (
+      await call(null, '/auth/login', 'POST', {
+        username: 'hq',
+        password: original.DEMO_PASSWORD,
+        portal_role: 'unknown',
+      })
+    ).status,
+    400,
+  );
+});
+test('Successful role-specific login rotates an existing session', async () => {
+  const first = await call(null, '/auth/login', 'POST', {
+    username: 'employee',
+    password: original.DEMO_PASSWORD,
+    portal_role: 'employee',
+  });
+  assert.equal(first.status, 200);
+  cookies.portal = first.response.headers.get('set-cookie').split(';')[0];
+  const second = await call('portal', '/auth/login', 'POST', {
+    username: 'manager',
+    password: original.DEMO_PASSWORD,
+    portal_role: 'manager',
+  });
+  assert.equal(second.status, 200);
+  assert.equal(await ok('portal', '/auth/me'), null);
+});

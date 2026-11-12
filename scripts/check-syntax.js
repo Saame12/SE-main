@@ -8,5 +8,5 @@ function scan(dir) {
       execFileSync(process.execPath, ['--check', path], { stdio: 'inherit' });
   }
 }
-for (const dir of ['server', 'scripts', 'web', 'tests']) scan(dir);
+for (const dir of ['server', 'scripts', 'web', 'tests', 'shared']) scan(dir);
 console.log('JavaScript syntax checks passed.');

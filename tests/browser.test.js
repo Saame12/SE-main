@@ -1,3 +1,4 @@
+import { PORTALS } from '../shared/portals.js';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
@@ -54,15 +55,17 @@ async function pageFor(role, width = 1440) {
   page.on('console', (m) => {
     if (m.type() === 'error' && !m.text().includes('404')) problems.push(m.text());
   });
-  await page.goto(base);
-  await page.getByRole('heading', { name: 'Linh kiện nổi bật' }).waitFor();
+  await page.goto(base + (role ? PORTALS[role].path : '/'));
   if (role) {
-    await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
+    await page
+      .getByRole('heading', { name: 'Đăng nhập ' + PORTALS[role].title, exact: true })
+      .waitFor();
     await page.getByLabel('Tên đăng nhập').fill(role);
     await page.getByLabel('Mật khẩu', { exact: true }).fill(original.DEMO_PASSWORD);
-    await page.locator('#dialog-form button[type=submit]').click();
+    await page.locator('#portal-login-form button[type=submit]').click();
     await page.locator('.sidebar').waitFor();
   }
+  if (!role) await page.getByRole('heading', { name: 'Linh kiện nổi bật' }).waitFor();
   return { context, page };
 }
 async function noOverflow(page) {
@@ -236,4 +239,65 @@ test('Mobile storefront and manager stay within viewport; no JavaScript/CSP erro
   await m.page.screenshot({ path: '.runtime/qa/manager-mobile.png', fullPage: true });
   await m.context.close();
   assert.deepEqual(problems, []);
+});
+
+test('Each anonymous staff portal has its own login, role description and mobile layout', async () => {
+  for (const role of ['hq', 'warehouse', 'manager', 'employee']) {
+    const context = await browser.newContext({
+      viewport: { width: role === 'employee' ? 390 : 1440, height: 1000 },
+    });
+    const page = await context.newPage();
+    await page.goto(base + PORTALS[role].path);
+    await page
+      .getByRole('heading', { name: 'Đăng nhập ' + PORTALS[role].title, exact: true })
+      .waitFor();
+    assert.equal(await page.locator('.sidebar,.products').count(), 0);
+    assert.equal(await page.getByRole('button', { name: 'Đăng ký', exact: true }).count(), 0);
+    await noOverflow(page);
+    await page.screenshot({ path: '.runtime/qa/login-' + role + '.png', fullPage: true });
+    await context.close();
+  }
+});
+test('Wrong-role login issues no session; correct portal login, wrong URL redirect and logout are consistent', async () => {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  page.setDefaultTimeout(8000);
+  await page.goto(base + '/employee.html');
+  await page.getByLabel('Tên đăng nhập').fill('hq');
+  await page.getByLabel('Mật khẩu', { exact: true }).fill(original.DEMO_PASSWORD);
+  await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
+  await page
+    .getByRole('alert')
+    .getByText(/Tài khoản này thuộc cổng Quản trị trụ sở/)
+    .waitFor();
+  assert.equal((await context.cookies()).filter((c) => c.name === 'se_session').length, 0);
+  await page.getByRole('link', { name: 'Mở cổng đăng nhập phù hợp →' }).click();
+  assert.equal(new URL(page.url()).pathname, '/admin.html');
+  await page.getByLabel('Tên đăng nhập').fill('hq');
+  await page.getByLabel('Mật khẩu', { exact: true }).fill(original.DEMO_PASSWORD);
+  await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
+  await page.locator('.sidebar').waitFor();
+  await page.goto(base + '/employee.html');
+  await page.waitForURL('**/admin.html');
+  await page.locator('.sidebar').waitFor();
+  assert.match(await page.getByRole('status').innerText(), /chuyển về cổng Quản trị trụ sở/);
+  await page.getByRole('button', { name: 'Đăng xuất', exact: true }).click();
+  await page.getByRole('heading', { name: 'Đăng nhập Quản trị trụ sở', exact: true }).waitFor();
+  assert.equal(new URL(page.url()).pathname, '/admin.html');
+  await context.close();
+});
+test('Expired and cross-tab changed sessions return to the appropriate portal', async () => {
+  const { page, context } = await pageFor('employee');
+  await context.request.post(base + '/api/auth/login', {
+    headers: { 'X-Requested-With': 'SE' },
+    data: { username: 'manager', password: original.DEMO_PASSWORD, portal_role: 'manager' },
+  });
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await page.waitForURL('**/manager.html');
+  await page.getByRole('heading', { name: 'Tổng quan kinh doanh', exact: true }).waitFor();
+  await context.clearCookies();
+  await page.reload();
+  await page.getByRole('heading', { name: 'Đăng nhập Quản lý cửa hàng', exact: true }).waitFor();
+  assert.equal(await page.locator('.sidebar').count(), 0);
+  await context.close();
 });
