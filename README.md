@@ -7,7 +7,6 @@
 Yêu cầu: Node.js 24 LTS, MySQL 8.0+, dịch vụ MySQL đang chạy.
 
 ```powershell
-cd C:\Users\sangl\source\repos\SE-main
 npm.cmd ci
 # Máy mới: Copy-Item .env.example .env, sau đó điền mật khẩu vào .env.
 npm.cmd run db:setup
