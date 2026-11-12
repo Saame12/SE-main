@@ -1,19 +1,30 @@
 {
   "name": "se-store",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "description": "Local Node.js and MySQL environment for V0 TECH",
   "type": "module",
-  "engines": { "node": ">=24 <25" },
+  "engines": {
+    "node": ">=24 <25"
+  },
   "scripts": {
     "start": "node --env-file=.env server/index.js",
     "dev": "node --env-file=.env --watch server/index.js",
     "db:setup": "node --env-file=.env scripts/setup-db.js",
     "db:check": "node --env-file=.env scripts/check-db.js",
-    "check": "node --check server/index.js && node --check scripts/setup-db.js && node --check server/db.js && node --check scripts/check-db.js"
+    "check": "node scripts/check-syntax.js",
+    "test": "node --env-file=.env --test --test-concurrency=1 tests/*.test.js",
+    "test:integration": "node --env-file=.env --test --test-concurrency=1 tests/integration.test.js",
+    "test:browser": "node --env-file=.env --test --test-concurrency=1 tests/browser.test.js",
+    "format": "prettier --write \"server/**/*.js\" \"scripts/**/*.js\" \"tests/**/*.js\" \"web/**/*.{js,css,html}\"",
+    "format:check": "prettier --check \"server/**/*.js\" \"scripts/**/*.js\" \"tests/**/*.js\" \"web/**/*.{js,css,html}\""
   },
   "dependencies": {
     "express": "^5.1.0",
     "mysql2": "^3.15.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "prettier": "^3.10.1"
   }
 }

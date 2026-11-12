@@ -6,9 +6,13 @@ export function dbConfig() {
     throw new Error('Điền DB_NAME, DB_USER và DB_PASSWORD trong .env.');
   }
   return {
-    host: DB_HOST || '127.0.0.1', port: Number(DB_PORT || 3306),
-    database: DB_NAME, user: DB_USER, password: DB_PASSWORD,
-    charset: 'utf8mb4', connectTimeout: 5000,
+    host: DB_HOST || '127.0.0.1',
+    port: Number(DB_PORT || 3306),
+    database: DB_NAME,
+    user: DB_USER,
+    password: DB_PASSWORD,
+    charset: 'utf8mb4',
+    connectTimeout: 5000,
   };
 }
 
