@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<!-- Khai báo bảng mã UTF-8 để hiển thị đúng tiếng Việt. -->
+<meta charset="utf-8">
+<!-- Cho phép trang co giãn đúng trên điện thoại; viewport-fit=cover dùng toàn màn hình (kể cả vùng tai thỏ). -->
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cửa hàng linh kiện PC</title>
+<!-- Tải phông Be Vietnam Pro (chữ thường, hỗ trợ tiếng Việt) và JetBrains Mono (mã, số liệu) từ Google Fonts. Không có mạng thì dùng phông hệ thống. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<!-- Nạp toàn bộ giao diện từ style1.css (cùng thư mục). -->
+<link rel="stylesheet" href="style1.css">
+</head>
+<body>
+<!-- KHUNG TRANG: gồm thanh đầu trang và 4 khu nội dung (mỗi tab một <section>); chỉ khu đang chọn hiện, các khu khác có thuộc tính hidden. -->
+<div class="wrap">
+  <!-- THANH ĐẦU TRANG: tên cửa hàng và các tab. -->
+  <header class="top">
+    <div class="brand">
+      <h1>Cửa hàng linh kiện PC</h1>
+    </div>
+    <!-- CÁC TAB: mỗi nút có data-tab trùng phần id của section (view-products, view-cats, view-stock, view-serial). Hàm setTab trong app1.js dùng để đổi qua lại. Số đỏ trên tab Tồn kho là #tabAlertN, ẩn khi không có sản phẩm cần nhập. -->
+    <nav class="tabs" role="tablist" aria-label="Mục quản lý">
+      <button class="tab" role="tab" id="tab-products" data-tab="products" aria-selected="true">Sản phẩm</button>
+      <button class="tab" role="tab" id="tab-cats" data-tab="cats" aria-selected="false">Loại sản phẩm</button>
+      <button class="tab" role="tab" id="tab-stock" data-tab="stock" aria-selected="false">Tồn kho<span class="n" id="tabAlertN" hidden></span></button>
+      <button class="tab" role="tab" id="tab-serial" data-tab="serial" aria-selected="false">Tra cứu Serial</button>
+    </nav>
+  </header>
+
+  <!-- TAB 1 - SẢN PHẨM: thống kê nhanh, bộ lọc và danh sách sản phẩm (mục quản lý sản phẩm). -->
+  <section id="view-products">
+    <!-- Vùng ô thống kê nhanh, do renderStats() đổ nội dung. -->
+    <div class="stats" id="stats"></div>
+    <!-- THANH LỌC: ô tìm kiếm + nút Thêm sản phẩm ở hàng trên; loại, hãng, tình trạng, khoảng giá ở hàng dưới. Các ô chọn được renderFilters() đổ lựa chọn; ô Loại lọc cả loại con. -->
+    <div class="filters">
+      <div class="frow first">
+        <div class="field">
+          <label for="fq">Tìm sản phẩm</label>
+          <input class="inp" id="fq" type="search" placeholder="Gõ tên, mã SKU, mã vạch hoặc thông số (vd: LGA1700, DDR4, 1TB)">
+        </div>
+        <div class="field" style="justify-content:flex-end"><button class="btn primary" id="btnAdd">+ Thêm sản phẩm</button></div>
+      </div>
+      <div class="frow">
+        <div class="field"><label for="ftype">Loại sản phẩm</label><select id="ftype"></select></div>
+        <div class="field"><label for="fbrand">Thương hiệu</label><select id="fbrand"></select></div>
+        <div class="field"><label for="fstatus">Tình trạng</label><select id="fstatus"></select></div>
+        <div class="field"><label>Khoảng giá (đồng)</label>
+          <div class="pricepair"><input class="inp" id="fmin" type="number" min="0" step="10000" placeholder="Từ" aria-label="Giá từ"><input class="inp" id="fmax" type="number" min="0" step="10000" placeholder="Đến" aria-label="Giá đến"></div>
+        </div>
+        <div class="field" style="justify-content:flex-end"><button class="btn" id="fclear">Xóa bộ lọc</button></div>
+      </div>
+    </div>
+    <!-- Dòng "Hiển thị x / y sản phẩm". -->
+    <div class="count" id="count"></div>
+    <!-- Bảng sản phẩm, do renderList() vẽ. -->
+    <div class="list" id="list"></div>
+  </section>
+
+  <!-- TAB 2 - LOẠI SẢN PHẨM VÀ THƯƠNG HIỆU (mục 3.2): quản lý cây loại, thông số kỹ thuật theo loại, danh sách thương hiệu, tra cứu sản phẩm theo loại. -->
+  <section id="view-cats" hidden>
+    <!-- Hai nút chuyển ngăn; thuộc tính data-csub cho biết ngăn nào. -->
+    <div class="seg" role="group" aria-label="Danh mục"><button data-csub="cats" aria-pressed="true">Loại sản phẩm</button><button data-csub="brands" aria-pressed="false">Thương hiệu</button></div>
+    <!-- NGĂN LOẠI SẢN PHẨM: renderCats() vẽ cây loại bên trái, chi tiết + danh sách sản phẩm bên phải. -->
+    <div id="catsPane"></div>
+    <!-- NGĂN THƯƠNG HIỆU: renderBrands() vẽ bảng thương hiệu. Đang ẩn (hidden) cho đến khi chọn. -->
+    <div id="brandsPane" hidden></div>
+  </section>
+
+  <!-- TAB 3 - TỒN KHO: cảnh báo cần nhập, bảng tồn, nhật ký điều chỉnh. -->
+  <section id="view-stock" hidden>
+    <!-- Khung cảnh báo "Cần nhập thêm hàng" (xanh nếu mọi thứ ổn). -->
+    <div id="alerts"></div>
+    <!-- Bảng tồn kho kèm thanh mức tồn và nút Kiểm kê / Điều chỉnh. -->
+    <div class="list" id="stocklist"></div>
+    <h2 class="sec">Lịch sử điều chỉnh tồn kho</h2>
+    <!-- Nhật ký điều chỉnh tồn, mới nhất lên đầu. -->
+    <div class="log" id="log"></div>
+  </section>
+
+  <!-- TAB 4 - TRA CỨU SERIAL: tra vòng đời một sản phẩm (nhập kho -> bán hàng -> bảo hành) theo số Serial. Ô nhập #sn (Enter hoặc nút Tra cứu), nút Serial mẫu #snSamples do renderSamples() tạo, kết quả #snResult do lookupSerial() vẽ. -->
+  <section id="view-serial" hidden>
+    <div class="lookup">
+      <div class="field">
+        <label for="sn">Số Serial cần tra</label>
+        <div class="bar-in">
+          <input class="inp" id="sn" type="search" autocomplete="off" spellcheck="false" placeholder="Nhập hoặc quét số Serial">
+          <button class="btn primary" id="snGo">Tra cứu</button>
+        </div>
+      </div>
+      <div><div class="lbl" style="margin-bottom:6px">Thử với các Serial mẫu</div><div class="chips" id="snSamples"></div></div>
+    </div>
+    <div id="snResult"></div>
+  </section>
+</div>
+
+<!-- CHỖ CHỨA ĐỘNG: JavaScript đổ vào đây ngăn kéo thêm/sửa sản phẩm (drawerHost), hộp thoại (dialogHost) và thông báo nổi (toastHost). Lúc đầu trống. -->
+<div id="drawerHost"></div>
+<div id="dialogHost"></div>
+<div id="toastHost"></div>
+
+<!-- Nạp toàn bộ xử lý từ app1.js. Đặt cuối trang để các vùng HTML ở trên đã có sẵn khi chương trình chạy. -->
+<script src="app1.js"></script>
+</body>
+</html>

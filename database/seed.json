@@ -1,0 +1,208 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "code": "CPU",
+      "name": "CPU",
+      "parent": "",
+      "specs": "Socket, Số nhân, Số luồng",
+      "status": "Đang dùng"
+    },
+    {
+      "id": 2,
+      "code": "MB",
+      "name": "Mainboard",
+      "parent": "",
+      "specs": "Socket, Chipset, Kích thước",
+      "status": "Đang dùng"
+    },
+    {
+      "id": 3,
+      "code": "RAM",
+      "name": "RAM",
+      "parent": "",
+      "specs": "Dung lượng, Thế hệ, Bus",
+      "status": "Đang dùng"
+    },
+    {
+      "id": 4,
+      "code": "VGA",
+      "name": "VGA",
+      "parent": "",
+      "specs": "Chip đồ họa, VRAM",
+      "status": "Đang dùng"
+    },
+    {
+      "id": 5,
+      "code": "SSD",
+      "name": "SSD/HDD",
+      "parent": "",
+      "specs": "Dung lượng, Chuẩn kết nối",
+      "status": "Đang dùng"
+    },
+    {
+      "id": 6,
+      "code": "PK",
+      "name": "Phụ kiện",
+      "parent": "",
+      "specs": "Kiểu kết nối",
+      "status": "Đang dùng"
+    }
+  ],
+  "brands": [
+    {
+      "id": 1,
+      "name": "Intel",
+      "status": "Đang dùng"
+    },
+    {
+      "id": 2,
+      "name": "AMD",
+      "status": "Đang dùng"
+    },
+    {
+      "id": 3,
+      "name": "Nvidia",
+      "status": "Đang dùng"
+    },
+    {
+      "id": 4,
+      "name": "ASUS",
+      "status": "Đang dùng"
+    },
+    {
+      "id": 5,
+      "name": "MSI",
+      "status": "Đang dùng"
+    },
+    {
+      "id": 6,
+      "name": "Gigabyte",
+      "status": "Đang dùng"
+    },
+    {
+      "id": 7,
+      "name": "Kingston",
+      "status": "Đang dùng"
+    },
+    {
+      "id": 8,
+      "name": "Corsair",
+      "status": "Đang dùng"
+    },
+    {
+      "id": 9,
+      "name": "Samsung",
+      "status": "Đang dùng"
+    },
+    {
+      "id": 10,
+      "name": "Razer",
+      "status": "Đang dùng"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "sku": "CPU-I9K",
+      "barcode": "8935001001",
+      "name": "Intel Core i9-13900K",
+      "cat": "CPU",
+      "brand": "Intel",
+      "price": 13500000,
+      "warranty": 36,
+      "serial": true,
+      "min": 5,
+      "stock": 8,
+      "avgCost": 11800000,
+      "status": "Đang kinh doanh",
+      "spec": "LGA1700 · 24 nhân 32 luồng",
+      "hist": []
+    },
+    {
+      "id": 2,
+      "sku": "CPU-R78",
+      "barcode": "8935001002",
+      "name": "AMD Ryzen 7 7800X3D",
+      "cat": "CPU",
+      "brand": "AMD",
+      "price": 10900000,
+      "warranty": 36,
+      "serial": true,
+      "min": 5,
+      "stock": 5,
+      "avgCost": 9600000,
+      "status": "Đang kinh doanh",
+      "spec": "AM5 · 8 nhân 16 luồng",
+      "hist": []
+    },
+    {
+      "id": 3,
+      "sku": "VGA-4080S",
+      "barcode": "8935001003",
+      "name": "Nvidia RTX 4080 Super 16GB",
+      "cat": "VGA",
+      "brand": "Nvidia",
+      "price": 28900000,
+      "warranty": 36,
+      "serial": true,
+      "min": 3,
+      "stock": 12,
+      "avgCost": 25600000,
+      "status": "Đang kinh doanh",
+      "spec": "16GB GDDR6X",
+      "hist": []
+    },
+    {
+      "id": 4,
+      "sku": "RAM-K32",
+      "barcode": "8935001004",
+      "name": "Kingston Fury 32GB DDR5 6000",
+      "cat": "RAM",
+      "brand": "Kingston",
+      "price": 3200000,
+      "warranty": 36,
+      "serial": false,
+      "min": 10,
+      "stock": 40,
+      "avgCost": 2600000,
+      "status": "Đang kinh doanh",
+      "spec": "32GB · DDR5 · 6000MHz",
+      "hist": []
+    },
+    {
+      "id": 5,
+      "sku": "SSD-990P",
+      "barcode": "8935001005",
+      "name": "Samsung 990 Pro 1TB NVMe",
+      "cat": "SSD/HDD",
+      "brand": "Samsung",
+      "price": 3890000,
+      "warranty": 60,
+      "serial": true,
+      "min": 10,
+      "stock": 0,
+      "avgCost": 3100000,
+      "status": "Đang kinh doanh",
+      "spec": "1TB · PCIe 4.0",
+      "hist": []
+    },
+    {
+      "id": 6,
+      "sku": "PK-RZ",
+      "barcode": "8935001006",
+      "name": "Combo phím chuột Razer Speed",
+      "cat": "Phụ kiện",
+      "brand": "Razer",
+      "price": 2390000,
+      "warranty": 12,
+      "serial": false,
+      "min": 5,
+      "stock": 22,
+      "avgCost": 1900000,
+      "status": "Đang kinh doanh",
+      "spec": "Phím cơ + chuột không dây",
+      "hist": []
+    }
+  ]
+}

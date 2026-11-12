@@ -1,0 +1,244 @@
+/* style1.css - giao diện cửa hàng linh kiện PC */
+/* Nền trang và cài đặt vùng an toàn trên điện thoại */
+/* Nền tảng: color-scheme báo trình duyệt biết trang hỗ trợ sáng/tối; padding env(safe-area-*) chừa chỗ cho tai thỏ và thanh hệ thống trên điện thoại. */
+:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+
+/* BỐ CỤC CHUNG: thanh đầu trang + 4 tab (Sản phẩm / Loại sản phẩm / Tồn kho / Tra cứu Serial).
+   Danh sách dạng bảng lưới (CSS grid), biểu mẫu mở ngăn kéo bên phải, hộp thoại nhỏ ở giữa màn hình. */
+/* BẢNG MÀU (chế độ sáng): mọi màu đặt thành biến CSS, nơi khác chỉ dùng var(--tên); muốn đổi màu cả trang chỉ sửa ở đây.
+   Nhóm: nền (--bg, --surface), chữ (--fg, --muted), màu nhấn (--accent), trạng thái (--ok xanh, --warn vàng, --bad đỏ, --off xám), bóng (--shadow), phông (--font, --mono). */
+:root{
+  --bg:#f2f5f7; --surface:#ffffff; --surface2:#e9eef2; --line:#d6dee5;
+  --fg:#162029; --muted:#586674; --accent:#0b6a88; --accent-fg:#ffffff; --accent-soft:#d9eff6;
+  --ok:#17724a; --ok-bg:#dcf2e6; --warn:#7f5300; --warn-bg:#fbeac8; --bad:#a8231b; --bad-bg:#fbdedb; --off:#586674; --off-bg:#e3e8ed;
+  --shadow:0 12px 40px rgba(10,25,35,.22);
+  --font:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+/* CHẾ ĐỘ TỐI tự động theo cài đặt máy. Điều kiện :not([data-theme="light"]) cho phép ép về sáng bằng thuộc tính data-theme. */
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e141a; --surface:#16202a; --surface2:#1d2935; --line:#2a3744;
+  --fg:#e5ebf0; --muted:#92a0ad; --accent:#5cc4e4; --accent-fg:#06222c; --accent-soft:#14323d;
+  --ok:#62d59e; --ok-bg:#133325; --warn:#f0c05a; --warn-bg:#3a2d10; --bad:#ff8f86; --bad-bg:#3c1a18; --off:#92a0ad; --off-bg:#25303b;
+  --shadow:0 12px 40px rgba(0,0,0,.55); color-scheme:dark}}
+/* Ép chế độ tối bằng thuộc tính data-theme="dark" trên thẻ html (bỏ qua cài đặt máy). */
+:root[data-theme="dark"]{
+  --bg:#0e141a; --surface:#16202a; --surface2:#1d2935; --line:#2a3744;
+  --fg:#e5ebf0; --muted:#92a0ad; --accent:#5cc4e4; --accent-fg:#06222c; --accent-soft:#14323d;
+  --ok:#62d59e; --ok-bg:#133325; --warn:#f0c05a; --warn-bg:#3a2d10; --bad:#ff8f86; --bad-bg:#3c1a18; --off:#92a0ad; --off-bg:#25303b;
+  --shadow:0 12px 40px rgba(0,0,0,.55); color-scheme:dark}
+
+/* Cách đo kích thước: padding và viền nằm TRONG chiều rộng, phần tử không bị tràn. */
+*{box-sizing:border-box}
+/* Thân trang: nền, màu chữ, phông chữ và lề hai bên (có tính vùng an toàn của điện thoại). */
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+/* Khung nội dung: rộng tối đa 1180px và căn giữa. */
+.wrap{max-width:1180px;margin:0 auto}
+/* Nút và ô nhập kế thừa phông chữ của trang (mặc định trình duyệt dùng phông riêng). */
+button,input,select,textarea{font:inherit;color:inherit}
+/* .mono: phông đơn cách cho mã SKU, mã vạch, Serial, số liệu. .muted: chữ phụ màu nhạt. */
+.mono{font-family:var(--mono);font-size:12px}
+.muted{color:var(--muted)}
+/* Viền nhấn khi dùng bàn phím (Tab) để biết đang đứng ở phần tử nào. */
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* THANH ĐẦU TRANG: tên cửa hàng bên trái, các tab bên phải (tự xuống dòng khi màn hình hẹp). */
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:18px 14px}
+.brand{display:flex;flex-direction:column;min-width:0}
+.brand h1{margin:0;font-size:20px;font-weight:700;letter-spacing:-.01em}
+.brand span{font-size:12px;color:var(--muted)}
+/* Nhóm tab: nền xám bo tròn; tab đang chọn ([aria-selected="true"]) nổi lên nền trắng. */
+.tabs{display:flex;gap:4px;background:var(--surface2);padding:4px;border-radius:10px;margin-left:auto;flex-wrap:wrap}
+.tab{border:0;background:transparent;padding:8px 14px;border-radius:7px;cursor:pointer;font-weight:500;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+/* Chấm đỏ nhỏ trên tab Tồn kho: số sản phẩm cần nhập thêm (do renderStats điền). */
+.tab .n{font-family:var(--mono);font-size:11px;background:var(--bad-bg);color:var(--bad);padding:1px 6px;border-radius:99px;margin-left:6px}
+
+/* CÁC KIỂU NÚT: .btn là nút thường; thêm .primary (nút chính), .danger (viền đỏ), .danger.solid (nền đỏ, dùng khi xác nhận xóa), .sm (nhỏ), .ghost (không viền). */
+.btn{border:1px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:500;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.danger.solid{background:var(--bad);color:var(--surface);}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--accent)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* THỐNG KÊ NHANH: các ô "Tất cả / Đang bán / Sắp hết / Hết hàng". Bấm để lọc danh sách; ô đang chọn đổi sang màu nhấn (aria-pressed). */
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.stat{display:flex;align-items:baseline;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 12px;cursor:pointer}
+.stat b{font-family:var(--mono);font-size:16px}
+.stat span{color:var(--muted);font-size:13px}
+.stat[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.stat.warn b{color:var(--warn)} .stat.bad b{color:var(--bad)}
+
+/* THANH LỌC SẢN PHẨM: khung chứa ô tìm kiếm, chọn loại, hãng, tình trạng, khoảng giá. .frow chia cột tự động, .field là một ô gồm nhãn + điều khiển. */
+.filters{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:12px;margin-bottom:14px}
+.frow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.frow.first{grid-template-columns:minmax(0,1fr) auto}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label,.lbl{font-size:12px;color:var(--muted);font-weight:500}
+/* Kiểu chung cho mọi ô nhập, ô chọn và vùng văn bản; dòng :focus ngay sau thêm viền và vòng sáng màu nhấn. */
+.inp,select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
+.inp:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+textarea{resize:vertical;min-height:72px}
+/* Hai ô "Từ - Đến" của khoảng giá đặt cạnh nhau. */
+.pricepair{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.count{font-size:13px;color:var(--muted);margin:2px 2px 8px}
+
+/* DANH SÁCH SẢN PHẨM: dạng bảng bằng CSS grid. .row là một dòng 7 cột (tên, loại/hãng, giá, tồn, bảo hành, trạng thái, nút); .row.head là dòng tiêu đề; .row.off làm mờ sản phẩm đã ngừng kinh doanh. */
+.list{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.row{display:grid;grid-template-columns:minmax(0,2.7fr) minmax(0,1.1fr) minmax(0,1fr) minmax(0,.8fr) minmax(0,.7fr) minmax(0,1.1fr) auto;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--line)}
+.row.head{border-top:0;background:var(--surface2);font-size:12px;font-weight:600;color:var(--muted);padding-block:9px}
+.row.off{opacity:.62}
+.cname{display:flex;gap:12px;align-items:center;min-width:0}
+/* Ô ảnh vuông 48px: hiện ảnh sản phẩm; chưa có ảnh thì hiện mã viết tắt của loại (SSD, CPU...). */
+.thumb{width:48px;height:48px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:500;color:var(--accent);flex:none;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.nm{display:flex;flex-direction:column;min-width:0}
+.nm b{font-weight:600;overflow-wrap:anywhere}
+.nm .mono,.nm .specs{color:var(--muted)}
+.nm .specs{font-size:12px;overflow-wrap:anywhere}
+.price{font-variant-numeric:tabular-nums;font-weight:600}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+/* Nhãn trạng thái bo tròn có chấm màu: .ok (xanh, đang bán), .warn (vàng, sắp hết/tạm ngừng), .bad (đỏ, hết hàng), .off (xám, ngừng kinh doanh). */
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:3px 10px;font-size:12px;font-weight:600;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.ok{background:var(--ok-bg);color:var(--ok)} .pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.bad{background:var(--bad-bg);color:var(--bad)} .pill.off{background:var(--off-bg);color:var(--off)}
+/* Nhãn nhỏ có viền, ví dụ chữ "Serial" cạnh tên sản phẩm hoặc "Đã ẩn" cạnh tên loại. */
+.tag{font-size:11px;font-weight:600;border:1px solid var(--line);border-radius:5px;padding:0 6px;color:var(--muted);margin-left:6px;white-space:nowrap}
+.cact{display:flex;gap:6px;justify-content:flex-end}
+/* Nhãn nhỏ trong từng ô (Giá bán, Tồn kho...). Ẩn trên máy tính; chỉ hiện ở giao diện điện thoại vì lúc đó dòng tiêu đề bị ẩn. */
+.cell .l{display:none}
+.empty{padding:40px 16px;text-align:center;color:var(--muted)}
+
+/* TAB TỒN KHO: khung cảnh báo cần nhập hàng, bảng tồn với thanh mức tồn, và nhật ký điều chỉnh. */
+.alerts{background:var(--warn-bg);border:1px solid transparent;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;flex-direction:column;gap:8px}
+.alerts.none{background:var(--ok-bg)}
+.alerts h3{margin:0;font-size:14px;color:var(--warn)} .alerts.none h3{color:var(--ok)}
+/* Các nút nhỏ bo tròn (chip) dùng cho gợi ý lý do, Serial mẫu, sản phẩm cần nhập. */
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:4px 10px;border-radius:99px;font-size:13px;cursor:pointer}
+.chip:hover{border-color:var(--accent)}
+.srow{display:grid;grid-template-columns:minmax(0,2.6fr) minmax(0,.7fr) minmax(0,.8fr) minmax(0,1.6fr) auto;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--line)}
+.srow.head{border-top:0;background:var(--surface2);font-size:12px;font-weight:600;color:var(--muted);padding-block:9px}
+/* Thanh tiến trình mức tồn kho / thời hạn bảo hành: .bar i là phần tô màu; thêm .warn (vàng) hoặc .bad (đỏ). */
+.bar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:99px}
+.bar.warn i{background:var(--warn)} .bar.bad i{background:var(--bad)}
+.barwrap{display:flex;flex-direction:column;gap:4px}
+.barwrap small{color:var(--muted);font-size:12px}
+h2.sec{font-size:15px;margin:22px 2px 8px}
+.log{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+/* Một dòng nhật ký điều chỉnh tồn: thời gian, sản phẩm, số lượng đổi, lý do. .diff.up xanh (tăng), .diff.down đỏ (giảm). */
+.logrow{display:grid;grid-template-columns:130px minmax(0,1.6fr) 120px minmax(0,2fr);gap:12px;padding:10px 16px;border-top:1px solid var(--line);align-items:start}
+.logrow:first-child{border-top:0}
+.diff{font-family:var(--mono);font-weight:500}
+.diff.up{color:var(--ok)} .diff.down{color:var(--bad)}
+
+/* TAB TRA CỨU SERIAL: ô nhập Serial; kết quả gồm tiêu đề, các bước (.steps/.step: nhập kho, bán hàng) và thanh bảo hành (.warr). */
+.lookup{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:12px}
+.lookup .bar-in{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.lookup .inp{font-family:var(--mono);font-size:15px;padding:11px 12px}
+.result{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.result .hd{padding:16px 18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.result .hd .sn{font-family:var(--mono);font-size:18px;font-weight:500}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.step{padding:16px 18px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:6px;min-width:0}
+.step:last-child{border-right:0}
+.step h4{margin:0;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.step .big{font-size:16px;font-weight:600;overflow-wrap:anywhere}
+.step dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:13px}
+.step dt{color:var(--muted)} .step dd{margin:0;overflow-wrap:anywhere}
+.warr{padding:16px 18px;border-top:1px solid var(--line);display:grid;gap:8px}
+.warr .bar{height:10px}
+.notfound{padding:18px;display:grid;gap:10px}
+
+/* NGĂN KÉO VÀ HỘP THOẠI: .scrim là lớp nền mờ phủ toàn màn hình. .drawer là ngăn kéo thêm/sửa sản phẩm từ bên phải; .dialog (trong .scrim.center) là hộp thoại nhỏ ở giữa. */
+.scrim{position:fixed;inset:0;background:rgba(8,16,22,.5);z-index:50;display:flex;justify-content:flex-end}
+.scrim.center{justify-content:center;align-items:center;padding:16px}
+.drawer{background:var(--surface);width:min(620px,100%);height:100%;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.dhead{display:flex;align-items:center;gap:12px;padding:16px 20px;padding-top:max(16px,env(safe-area-inset-top,0px));border-bottom:1px solid var(--line)}
+.dhead h3{margin:0;font-size:17px;flex:1}
+/* Thân ngăn kéo cuộn riêng; .dhead (đầu) và .dfoot (chân chứa nút Lưu/Hủy) đứng cố định. */
+.dbody{padding:18px 20px;overflow-y:auto;flex:1;display:grid;gap:20px;align-content:start}
+.dfoot{display:flex;gap:8px;padding:14px 20px;padding-bottom:max(14px,env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);flex-wrap:wrap;align-items:center}
+.dfoot .sp{flex:1}
+/* Nhóm trường trong biểu mẫu (Thông tin chung, Giá bán, Thông số, Kho); legend là tiêu đề nhóm. */
+fieldset{border:0;margin:0;padding:0;display:grid;gap:12px;min-width:0}
+legend{font-weight:700;font-size:13px;padding:0 0 8px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.hint{font-size:12px;color:var(--muted)}
+/* Một dòng thông số kỹ thuật: ô tên, ô giá trị và nút xóa. */
+.specrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) auto;gap:8px}
+/* Ô tích chọn dạng thẻ (ví dụ "Quản lý theo số Serial"). */
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);cursor:pointer}
+.check input{margin-top:3px;width:16px;height:16px;accent-color:var(--accent)}
+.imgbox{display:flex;gap:12px;align-items:center}
+.imgbox .thumb{width:72px;height:72px}
+/* .note: khung thông tin màu nhấn nhạt; .err: khung báo lỗi đỏ khi kiểm tra dữ liệu. */
+.note{background:var(--accent-soft);border-radius:8px;padding:10px 12px;font-size:13px}
+.err{background:var(--bad-bg);color:var(--bad);border-radius:8px;padding:10px 12px;font-size:13px;font-weight:500}
+.hist{display:grid;gap:4px;font-size:13px}
+.hist div{display:flex;gap:10px;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:4px}
+.dialog{background:var(--surface);border-radius:14px;padding:20px;width:min(440px,100%);box-shadow:var(--shadow);display:grid;gap:14px}
+.dialog h3{margin:0;font-size:17px}
+.dialog p{margin:0}
+.dialog .acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.diffbox{display:flex;justify-content:space-between;background:var(--bg);border-radius:8px;padding:10px 12px;font-size:13px}
+/* Thông báo nhỏ nổi ở cuối màn hình, tự biến mất sau khoảng 3 giây (hàm toast điều khiển). */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:max(20px,env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:99px;font-weight:500;z-index:80;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+
+/* MỤC 3.2 - LOẠI SẢN PHẨM VÀ THƯƠNG HIỆU: kiểu cho cây loại, khung chi tiết và bảng thương hiệu. */
+/* Nút chuyển giữa hai ngăn "Loại sản phẩm" và "Thương hiệu". */
+.seg{display:inline-flex;gap:4px;background:var(--surface2);padding:4px;border-radius:10px;margin-bottom:14px}
+.seg button{border:0;background:transparent;padding:7px 14px;border-radius:7px;cursor:pointer;font-weight:500;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+/* Bố cục 2 cột của ngăn Loại sản phẩm: cây loại bên trái (240-330px), chi tiết bên phải. */
+.cgrid{display:grid;grid-template-columns:minmax(240px,330px) minmax(0,1fr);gap:14px;align-items:start}
+.tree{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tree .th{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;background:var(--surface2);font-weight:600;font-size:13px}
+/* Một dòng trong cây loại. .sel là loại đang chọn, .off là loại đã ẩn (gạch ngang, chữ nhạt). Độ thụt lề theo cấp được đặt bằng padding-left trong JS. */
+.node{display:flex;width:100%;justify-content:space-between;gap:8px;align-items:center;border:0;border-top:1px solid var(--line);background:transparent;padding:10px 12px;text-align:left;cursor:pointer}
+.node:hover{background:var(--surface2)}
+.node.sel{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent);font-weight:600}
+.node.off .nn{color:var(--muted);text-decoration:line-through}
+.cdetail{display:grid;gap:14px;min-width:0}
+/* Khung trắng bo tròn chứa từng khối thông tin ở cột chi tiết. */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:12px;min-width:0}
+.card h3{margin:4px 0 0;font-size:17px}
+.crumb{color:var(--muted);font-size:13px}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+/* .prow: dòng sản phẩm trong ngăn Loại (5 cột). .brow: dòng thương hiệu (3 cột). Bản .head là dòng tiêu đề. */
+.prow,.brow{display:grid;gap:12px;align-items:center;padding:10px 16px;border-top:1px solid var(--line)}
+.prow{grid-template-columns:minmax(0,2.4fr) minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) minmax(0,.6fr)}
+.brow{grid-template-columns:minmax(0,2fr) minmax(0,1fr) auto}
+.prow.head,.brow.head{border-top:0;background:var(--surface2);font-size:12px;font-weight:600;color:var(--muted);padding-block:9px}
+/* Hộp thoại cao hơn màn hình thì tự cuộn thay vì bị cắt. */
+.dialog{max-height:calc(100vh - 32px);overflow:auto}
+/* MÀN HÌNH HẸP (mục 3.2): cây loại và chi tiết xếp 1 cột, dòng bảng thành 2 cột, ẩn dòng tiêu đề. */
+@media (max-width:900px){.cgrid{grid-template-columns:1fr}.prow.head,.brow.head{display:none}.prow,.brow{grid-template-columns:repeat(2,minmax(0,1fr))}.prow>:first-child,.brow>:first-child{grid-column:1/-1}}
+
+/* ĐIỆN THOẠI / MÁY TÍNH BẢNG (dưới 900px): ẩn dòng tiêu đề bảng, mỗi dòng sản phẩm xếp 2 cột kèm nhãn nhỏ, tab giãn hết chiều ngang. */
+@media (max-width:900px){
+  .row.head,.srow.head{display:none}
+  .row{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px}
+  .row .cname,.row .cact{grid-column:1/-1}
+  .cell .l{display:block;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+  .srow{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px}
+  .srow .cname,.srow .barwrap,.srow .cact{grid-column:1/-1}
+  .cact{justify-content:flex-start}
+  .logrow{grid-template-columns:1fr 1fr}
+  .logrow>:nth-child(2),.logrow>:nth-child(4){grid-column:1/-1}
+  .tabs{margin-left:0;width:100%}
+  .tab{flex:1}
+  .step{border-right:0;border-bottom:1px solid var(--line)}
+  .step:last-child{border-bottom:0}
+}
+/* MÀN HÌNH RẤT NHỎ (dưới 520px): các ô 2 cột trong biểu mẫu xếp thành 1 cột. */
+@media (max-width:520px){.g2{grid-template-columns:1fr}.frow.first{grid-template-columns:1fr}.specrow{grid-template-columns:1fr 1fr auto}}
+/* Người dùng bật "giảm chuyển động" trong máy thì tắt mọi hiệu ứng. */
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

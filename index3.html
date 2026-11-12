@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>V0 PC Store – Hệ Thống Bán Lẻ & Build PC Cao Cấp</title>
+  <meta name="description" content="Chuyên cung cấp linh kiện máy tính, CPU, VGA, Mainboard, RAM, SSD chính hãng với giá tốt nhất. Tự build PC theo ý thích, bảo hành chu đáo.">
+
+  <!-- Phông chữ Google Fonts: Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <!-- File giao diện CSS -->
+  <link rel="stylesheet" href="style3.css">
+</head>
+<body>
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <!-- Logo thương hiệu -->
+      <a href="javascript:showShop()" class="brand-logo" title="Trang chủ V0 PC Store">
+        <div class="logo-box">
+          <img id="lg" src="./IMG/apple-icon.png" alt="V0 PC Logo" onerror="this.src='https://api.iconify.design/lucide:cpu.svg?color=%233b82f6'">
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">V0 TECH<span class="brand-dot">.</span></span>
+          <span class="brand-tagline">PC & Hardware</span>
+        </div>
+      </a>
+
+      <!-- Thanh tìm kiếm sản phẩm -->
+      <div class="search-box">
+        <span class="search-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input class="search-input" id="q" type="search" placeholder="Tìm kiếm linh kiện: RTX 4080, i9-13900K, DDR5..." aria-label="Tìm kiếm linh kiện">
+      </div>
+
+      <!-- Khu vực nút chức năng -->
+      <nav class="header-actions">
+        <!-- Nút Tra cứu đơn hàng -->
+        <button class="nav-btn" id="tb" title="Tra cứu trạng thái đơn hàng">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          <span class="btn-label">Đơn hàng</span>
+        </button>
+
+        <!-- Nút Mã giảm giá -->
+        <button class="nav-btn" id="pb" title="Danh sách mã ưu đãi">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+          <span class="btn-label">Mã giảm giá</span>
+        </button>
+
+        <!-- Nút Đăng nhập / Tài khoản -->
+        <button class="nav-btn" id="ub" title="Tài khoản người dùng">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span class="btn-label">Đăng nhập</span>
+        </button>
+
+        <!-- Nút Đổi giao diện Dark / Light Mode -->
+        <button class="nav-btn icon-only" id="theme-btn" title="Chuyển chế độ Sáng / Tối" aria-label="Toggle Theme">
+          <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+
+        <!-- Nút Giỏ hàng nổi bật -->
+        <button class="cart-btn" id="cb" title="Mở giỏ hàng">
+          <div class="cart-icon-wrapper">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            <span class="cart-badge" id="cc">0</span>
+          </div>
+          <span class="cart-text">Giỏ hàng</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ==================== NỘI DUNG CHÍNH (SHOP VIEW) ==================== -->
+  <div id="shop">
+    <!-- Hero Banner Showcase -->
+    <section class="hero-section">
+      <div class="hero-container">
+        <div class="hero-content">
+          <div class="hero-pill">
+            <span class="pill-dot"></span>
+            <span>CHUYÊN LINH KIỆN HI-END & BUILD PC CHÍNH HÃNG</span>
+          </div>
+          <h1 class="hero-title">
+            Kiến Tạo Cỗ Máy <br>
+            <span class="gradient-text">Hiệu Năng Vượt Trội</span>
+          </h1>
+          <p class="hero-desc">
+            Trải nghiệm kho linh kiện tuyển chọn: CPU đa nhân, Card đồ họa RTX thế hệ mới, RAM DDR5 siêu tốc.
+            Cam kết 100% chính hãng, bảo hành tận tâm đến 36 tháng, hỗ trợ giao hàng hỏa tốc.
+          </p>
+          <div class="hero-actions">
+            <a href="#cats" class="btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+              <span>Xem Linh Kiện</span>
+            </a>
+            <button class="btn-secondary" onclick="promoList()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+              <span>Nhận Voucher Giảm 15%</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trust Badges Bar (Lợi ích khách hàng) -->
+      <div class="trust-bar">
+        <div class="trust-item">
+          <div class="trust-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+          </div>
+          <div class="trust-text">
+            <strong>Giao Hàng Siêu Tốc</strong>
+            <small>Nội thành trong 2 giờ</small>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <div class="trust-text">
+            <strong>100% Chính Hãng</strong>
+            <small>Bảo hành 1 đổi 1 tới 36T</small>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+          </div>
+          <div class="trust-text">
+            <strong>Đổi Trả Dễ Dàng</strong>
+            <small>Miễn phí trong 7 ngày đầu</small>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+          </div>
+          <div class="trust-text">
+            <strong>Trả Góp 0% Lãi Suất</strong>
+            <small>Thủ tục linh hoạt, nhanh gọn</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Khu vực Lọc và Danh mục -->
+    <section class="catalog-section">
+      <div class="catalog-header">
+        <div class="section-title-wrap">
+          <span class="sub-heading">DANH MỤC LINH KIỆN</span>
+          <h2 class="section-title">Chọn Linh Kiện Build PC</h2>
+        </div>
+      </div>
+
+      <!-- Thanh lọc danh mục và sắp xếp (render bởi app3.js) -->
+      <div class="filter-toolbar" id="cats"></div>
+
+      <!-- Lưới sản phẩm (render bởi app3.js) -->
+      <main class="products-grid" id="g" aria-live="polite"></main>
+    </section>
+  </div>
+
+  <!-- ==================== KHU VỰC AUTH & ACCOUNT (ẨN/HIỆN THEO STATE) ==================== -->
+  <section id="auth" class="auth-wrapper" hidden></section>
+  <section id="acct" class="auth-wrapper acct-wrapper" hidden></section>
+
+  <!-- ==================== MODAL OVERLAY (XEM CHI TIẾT & TRA CỨU ĐƠN) ==================== -->
+  <div class="overlay-backdrop" id="ov"></div>
+
+  <!-- ==================== DRAWER GIỎ HÀNG ==================== -->
+  <aside class="cart-drawer" id="dr" aria-label="Giỏ hàng mua sắm"></aside>
+
+  <!-- ==================== TOAST THÔNG BÁO ==================== -->
+  <div class="toast-notification" id="ts" role="status" aria-live="polite"></div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col brand-col">
+        <div class="brand-logo footer-logo">
+          <div class="logo-box">
+            <img src="./IMG/apple-icon.png" alt="Logo" onerror="this.src='https://api.iconify.design/lucide:cpu.svg?color=%233b82f6'">
+          </div>
+          <span class="brand-name">V0 TECH<span class="brand-dot">.</span></span>
+        </div>
+        <p class="footer-desc">
+          Hệ thống cung cấp linh kiện máy tính, giải pháp tản nhiệt và PC Gaming hàng đầu.
+          Đồng hành cùng đam mê công nghệ và sáng tạo không giới hạn.
+        </p>
+        <div class="footer-contact">
+          <p>📍 Địa chỉ: 123 Tech Park, Tòa nhà Công Nghệ, TP. Hồ Chí Minh</p>
+          <p>📞 Hotline: 1900 6868 (8:00 - 21:30 hàng ngày)</p>
+          <p>✉️ Email: support@v0tech.vn</p>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="col-title">Danh Mục Nổi Bật</h4>
+        <ul class="col-links">
+          <li><a href="#cats">Bộ vi xử lý (CPU)</a></li>
+          <li><a href="#cats">Card đồ họa (VGA)</a></li>
+          <li><a href="#cats">Bo mạch chủ (Mainboard)</a></li>
+          <li><a href="#cats">Bộ nhớ trong (RAM DDR5)</a></li>
+          <li><a href="#cats">Ổ cứng SSD NVMe</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="col-title">Chính Sách & Hỗ Trợ</h4>
+        <ul class="col-links">
+          <li><a href="javascript:track()">Tra cứu đơn hàng</a></li>
+          <li><a href="javascript:promoList()">Mã khuyến mãi & Voucher</a></li>
+          <li><a href="#!">Chính sách bảo hành tận nơi</a></li>
+          <li><a href="#!">Chính sách vận chuyển & hoàn tiền</a></li>
+          <li><a href="#!">Hướng dẫn thanh toán trả góp</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="col-title">Phương Thức Thanh Toán</h4>
+        <div class="payment-methods">
+          <span class="pay-tag">COD</span>
+          <span class="pay-tag">Visa / Master</span>
+          <span class="pay-tag">VNPAY</span>
+          <span class="pay-tag">MoMo</span>
+          <span class="pay-tag">Chuyển khoản</span>
+        </div>
+        <div class="trust-seal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+          <span>Website Đã Đăng Ký Bộ Công Thương</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 V0 TECH Co., Ltd. Tất cả quyền được bảo lưu. Thiết kế giao diện Frontend chuẩn UI/UX.</p>
+    </div>
+  </footer>
+
+  <!-- File xử lý logic JavaScript -->
+  <script src="app3.js"></script>
+</body>
+</html>
