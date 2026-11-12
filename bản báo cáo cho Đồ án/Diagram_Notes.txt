@@ -1,0 +1,182 @@
+﻿DỰ ÁN #003 — GHI CHÚ CÁC SƠ ĐỒ
+Nguồn: Project_Report.docx, phiên bản 1.0, Reconstruction V2.0, bản nháp.
+Mã SHA-256 của tài liệu nguồn: fa7994edc598faa76244c2a0bd46d7f2191e99d431aa7ccd6ac09d749fcfc6f7
+Ngôn ngữ: tiếng Việt. Giữ nguyên các mã tham chiếu SAD, BFD, DFD, UC, E, D, BR, BP, FR và các chữ viết tắt kỹ thuật API, QR, COD.
+
+1. TỆP BÀN GIAO VÀ QUY ƯỚC
+01 — Sơ đồ kiến trúc hệ thống (SAD): kiến trúc thành phần, chưa mô tả hạ tầng triển khai cụ thể.
+02 — Sơ đồ phân rã chức năng (BFD) mức 2: gốc 0; chức năng mức 1 mang mã 1.0–8.0; chức năng mức 2 mang mã n.m.
+03 — Sơ đồ luồng dữ liệu (DFD) mức 0: sơ đồ ngữ cảnh có một tiến trình 0 đại diện toàn hệ thống.
+04 — DFD mức 1: phân rã tiến trình 0 thành tám tiến trình 1.0–8.0.
+05 — Sơ đồ ca sử dụng: một ranh giới hệ thống, năm tác nhân con người và 28 ca sử dụng ở mức mục tiêu.
+Một số môn học gọi sơ đồ có nhiều tiến trình đầu tiên là DFD mức 0 và gọi sơ đồ một tiến trình là sơ đồ ngữ cảnh. Bộ sơ đồ này dùng quy ước nêu trên để tránh nhầm lẫn khi đối chiếu.
+Tệp SVG và PNG chỉ chứa sơ đồ. Tệp draw.io gồm năm trang có thể chỉnh sửa. Toàn bộ diễn giải được đặt riêng trong tệp TXT này.
+Số thứ tự DFD dùng để định danh tiến trình, không phải thứ tự thực hiện.
+Đường nối BFD thể hiện quan hệ phân rã chức năng. Đường nối SAD thể hiện truy cập hoặc phụ thuộc. Mũi tên DFD thể hiện dữ liệu, không thể hiện hàng hóa vật lý, quyền phê duyệt hay lệnh điều khiển.
+Liên kết giữa tác nhân và ca sử dụng không có hướng và không quy định thứ tự nghiệp vụ.
+Các tác nhân và kho dữ liệu lặp lại trong DFD vẫn mang cùng mã E hoặc D, do đó là cùng một thực thể hoặc kho dữ liệu logic; việc lặp chỉ giúp dễ đọc.
+Kho dữ liệu logic không đồng nghĩa với bảng vật lý hoặc cơ sở dữ liệu độc lập. Các kho đều thuộc cơ sở dữ liệu quan hệ tập trung trong SAD.
+DFD biểu diễn truy cập thông tin logic; không bắt buộc xử lý bất đồng bộ và không cho phép giao diện truy cập trực tiếp cơ sở dữ liệu.
+
+2. PHẠM VI VÀ NHỮNG ĐIỂM ĐÃ XÁC ĐỊNH
+Các mục 1–3, 6 và 9 của báo cáo mô tả hệ thống mục tiêu cùng năm giao diện. Bộ sơ đồ phản ánh phạm vi mục tiêu này, bao gồm trụ sở chính, kho trung tâm, cửa hàng, nhân viên và khách hàng.
+Việc thể hiện một chức năng không khẳng định chức năng đó bắt buộc triển khai đầy đủ trong phiên bản nộp đồ án đầu tiên. Trọng tâm triển khai vẫn là vận hành cấp cửa hàng theo mục 1.3 và FR01–09.
+SAD giữ đủ mười miền nghiệp vụ tại mục 9 bên trong một hệ thống nguyên khối dạng mô-đun. Hai hàng mô-đun chỉ là cách bố trí; các mô-đun nằm cùng cột không tạo thành một cặp dịch vụ.
+Dịch vụ ứng dụng thực thi quy tắc nghiệp vụ và điều phối giao dịch giữa các mô-đun. Đây là cách thể hiện kiến trúc phù hợp với đề xuất nguyên khối và yêu cầu nhất quán dữ liệu của báo cáo.
+Chỉ thể hiện một cơ sở dữ liệu quan hệ tập trung về mặt logic. Chưa mặc định ngôn ngữ, nền tảng, hệ quản trị cơ sở dữ liệu, nhà cung cấp đám mây, giao thức mạng, vi dịch vụ hoặc sản phẩm hạ tầng.
+Xác thực, phân quyền, giới hạn phạm vi cửa hàng và truy vết là yêu cầu xuyên suốt ở phía xử lý. Vì báo cáo chưa đặc tả luồng đăng nhập, khôi phục tài khoản hoặc truy vết chi tiết, các luồng này chưa được tự bổ sung thành ca sử dụng hay tiến trình DFD riêng.
+Theo mục 3.3, đại diện trụ sở được ủy quyền có thể sử dụng Web Quản lý Kho. Giao diện chính của trụ sở là Web Quản lý Kinh doanh. SAD chỉ thể hiện người dùng chính, chưa thay thế ma trận phân quyền đầy đủ.
+Mọi cửa hàng dùng chung danh mục sản phẩm; tồn kho được theo dõi theo từng địa điểm.
+Ứng dụng Nhân viên Cửa hàng là tên gọi được sử dụng theo đề xuất làm rõ tại mục 3.5, thay cho cách gọi dễ gây hiểu nhầm là ứng dụng quản trị nhân sự toàn công ty.
+Trạng thái đơn hàng và trạng thái thanh toán được lưu riêng tại D3 và D4.
+Thanh toán không phải COD phải được xác minh trước khi xác nhận đơn trực tuyến, theo BR029.
+Đơn COD đi qua Đã xác nhận → Đã nhận hàng → Hoàn tất. Bước Hoàn tất yêu cầu xác nhận đã thu tiền, theo BR030–031. Việc xác nhận thu hộ từ đơn vị vận chuyển được mô phỏng qua thao tác quản lý cửa hàng.
+Không tự thêm tác nhân tích hợp là đơn vị vận chuyển, cổng thanh toán, ngân hàng, cổng nhà cung cấp hoặc hệ thống bên ngoài khác. Nhà cung cấp thực tế và việc di chuyển hàng hóa không phải luồng dữ liệu trực tiếp của phần mềm khi chưa có đặc tả tích hợp.
+Luồng biến động tồn kho do bán hàng tại tiến trình 3.0 chỉ thể hiện tác động dữ liệu cuối cùng; chưa quyết định thời điểm giữ hàng, xử lý đồng thời hoặc sự kiện trừ kho chính xác.
+Hoa hồng được ghi nhận từ giao dịch Hoàn tất đủ điều kiện theo BR041, với tham chiếu nhân viên phụ trách trong D3. Chưa giả định tỷ lệ hoa hồng hay quy trình chi trả.
+
+3. ĐIỂM CHƯA RÕ, XUNG ĐỘT VÀ PHẦN CHỦ ĐỘNG BỎ QUA
+A. Phê duyệt bổ sung và điều chuyển kho — mục 4.2, BP01 và mục 11.
+Báo cáo nêu kho xuất hàng cho yêu cầu đã duyệt nhưng chưa chốt người duyệt, các trạng thái và cách xác nhận nhập hàng. BFD, DFD và ca sử dụng chỉ thể hiện yêu cầu, điều phối và ghi nhận điều chuyển ở mức khái quát. Chưa thể đặc tả hoàn chỉnh ca phê duyệt hoặc xác nhận nhập kho khi chưa rõ người chịu trách nhiệm, bằng chứng và quy tắc chuyển trạng thái.
+Chưa vẽ chi tiết cơ chế giữ hàng, chống bán vượt tồn kho, xử lý thiếu hàng ở kho trung tâm hoặc đối soát tồn kho. Tác động bán hàng lên tồn kho vẫn được thể hiện trừu tượng.
+
+B. Giao hàng và hoàn tất đơn — mục 4.5, BP03 và mục 11.
+Đã có ba trạng thái Đã xác nhận, Đã nhận hàng và Hoàn tất; tuy nhiên bằng chứng nhận tại cửa hàng so với giao tận nơi và chuyển trạng thái chính xác của đơn trả trước chưa được chốt. UC16 chỉ thể hiện mục tiêu nghiệp vụ, chưa phải máy trạng thái hay đặc tả phân quyền đầy đủ. Chưa thêm tích hợp vận chuyển hoặc thao tác tự động xác nhận khách đã nhận hàng.
+
+C. Triển khai thanh toán — mục 4.6 và 11.
+Có thanh toán thẻ, QR và COD, nhưng chưa chọn tích hợp thật hay mô phỏng. SAD chỉ thể hiện mô-đun Bản ghi thanh toán. Luồng gửi thông tin và kết quả thanh toán trong DFD là dữ liệu logic, không mặc định phần mềm đã thực hiện thu tiền thật, quyết toán ngân hàng hay xác minh tự động.
+Chưa tạo ca sử dụng thanh toán chi tiết, thanh toán lỗi/thử lại hoặc hoàn tiền. Việc nhân viên ghi nhận thanh toán tại cửa hàng được hỗ trợ bởi BP02/FR07; ranh giới giao dịch và điều kiện hoàn tất vẫn cần đặc tả thêm.
+
+D. Hủy đơn và trả hàng — BR043–044, mục 3.4–3.6 và 11.
+Mục tiêu gửi yêu cầu của khách hàng đã rõ nên có UC26 và UC27. Các yêu cầu được lưu tại D3. Quyền phê duyệt, điều kiện chấp nhận, hoàn tiền, nhập lại kho và điều chỉnh hoa hồng chưa rõ. Các ca xử lý tiếp theo và tác động tự động này được bỏ qua. Trạng thái yêu cầu không mặc định việc hủy hoặc trả hàng đã được chấp thuận.
+
+E. Khuyến mãi — mục 4.7 và 11.
+Đã rõ khuyến mãi do trụ sở tạo có phạm vi toàn bộ hoặc một số cửa hàng, còn khuyến mãi của quản lý chỉ thuộc cửa hàng được phân quyền. Chưa chốt cộng dồn, ưu tiên, điều kiện hợp lệ và xử lý hết hạn. Sơ đồ chỉ thể hiện cấu hình và tra cứu; không quy định thuật toán giảm giá hoặc mặc định mọi khuyến mãi đều áp dụng.
+
+F. Nhân viên và hoa hồng — FR04, mục 4.8 và 11.
+Đã có quyền xem và quản lý theo phạm vi, nhưng chưa rõ quyền sửa hồ sơ chi tiết, phân công lại đơn, tỷ lệ và điều chỉnh hoa hồng. UC13 chỉ cho xem. UC03 và luồng cập nhật nhân viên được ủy quyền tại DFD6 phản ánh trách nhiệm quản lý tổng quát của trụ sở, chưa phải ma trận tạo/xem/sửa/xóa hoàn chỉnh.
+Có ghi nhận hoa hồng, nhưng chưa thể hiện tính lương hoặc chi trả hoa hồng.
+
+G. Khách hàng và hạng thành viên — mục 2.5 và 3.6.
+Có thể hiển thị thông tin hạng thành viên. Chưa đặc tả đăng ký, chỉnh sửa hồ sơ, cách tính hạng, điều kiện đạt hạng hoặc điểm thưởng. Tiến trình 7.0 chỉ tra cứu thông tin đã có; UC28 không tạo thêm quy tắc xếp hạng.
+
+H. Thông tin nhà cung cấp — mục 3.3.
+Báo cáo đề cập quản lý thông tin nhà cung cấp nhưng chưa xác định quy trình mua hàng, tác nhân, đơn vị quản lý dữ liệu hoặc thao tác cụ thể. Vì vậy chưa đưa chức năng nhà cung cấp vào BFD, DFD và ca sử dụng chi tiết. Nghiệp vụ mua hàng/nhập kho cũng được hoãn theo mục 2.2. Đây là phần chủ động bỏ qua để chờ làm rõ.
+
+I. Báo cáo — FR01, FR09, mục 8 và 11.
+Đã thể hiện báo cáo cửa hàng, toàn công ty và cá nhân. Chưa chốt công thức chỉ số, doanh thu gộp/thuần, xử lý hoàn tiền, thời điểm ghi nhận hoặc đối soát. Không tự đặt công thức. Luồng dữ liệu báo cáo chỉ cho biết các nguồn dữ liệu có thể sử dụng.
+
+J. Phạm vi ứng dụng nhân viên — mục 3.5 so với BP03/BP05.
+Mục 3.5 ghi việc xem đơn được giao phụ thuộc phạm vi ứng dụng, trong khi mục 2.4, 6 và BP03/BP05 yêu cầu nhân viên xử lý đơn được phân công. UC20 giữ mục tiêu nghiệp vụ này; vị trí màn hình cuối cùng chưa được chốt. SAD dùng Ứng dụng Nhân viên Cửa hàng làm giao diện chính, không áp đặt thiết kế màn hình cụ thể.
+
+K. Quan hệ bao gồm và mở rộng trong sơ đồ ca sử dụng.
+Không thêm quan hệ bao gồm hoặc mở rộng vì chúng khẳng định hành vi tái sử dụng bắt buộc hoặc mở rộng có điều kiện, trong khi báo cáo chưa có luồng ca sử dụng đủ chi tiết để xác nhận.
+Xác thực được xem là điều kiện xuyên suốt; không tự thêm quan hệ bao gồm đăng nhập cho mọi ca sử dụng. Kiểm tra thanh toán và tồn kho vẫn là quy tắc cho bước đặc tả chi tiết sau này. Liên kết tác nhân thông thường phù hợp với sơ đồ mục tiêu hiện tại.
+
+4. ĐỐI CHIẾU VỚI TÀI LIỆU NGUỒN
+SAD: mục 3.1–3.6, 8 và 9.
+Nhánh BFD / tiến trình DFD 1: mục 2.1, 3.2; BR001–006.
+Nhánh BFD / tiến trình DFD 2: mục 2.2–2.3, 3.3–3.4; BR007–012; BP01; FR02–03.
+Nhánh BFD / tiến trình DFD 3: mục 3.4–3.6; BR013–025, BR043–044; BP02–03/05; FR05/07.
+Nhánh BFD / tiến trình DFD 4: mục 4.5–4.6; BR026–031; BP02–03.
+Nhánh BFD / tiến trình DFD 5: mục 4.7; BR032–037; BP04; FR06.
+Nhánh BFD / tiến trình DFD 6: mục 2.4, 3.2/3.4/3.5, 4.8; BR038–042; FR04/08.
+Nhánh BFD / tiến trình DFD 7: mục 2.5, 3.6 và 9; chỉ thể hiện tra cứu/hiển thị.
+Nhánh BFD / tiến trình DFD 8: mục 3.2, 3.4, 3.5; FR01/09.
+UC01–06: mục 2.1, 3.2 và BP04.
+UC07–09: mục 2.2, 3.3 và BP01.
+UC10–17: mục 3.4, 4.5–4.8; FR01–06/09; BP03/05.
+UC18–21: mục 2.4, 3.5; FR07–08; BP02/05.
+UC22–28: mục 2.5, 3.6; BR012, BR026–031, BR043–044; BP03.
+
+5. CÂN BẰNG DFD NGỮ CẢNH VÀ MỨC 1
+Mỗi luồng dưới đây thuộc một phần luồng tổng hợp E1–E5 trên sơ đồ ngữ cảnh. Không xuất hiện tác nhân ngoài hoặc luồng dữ liệu ngoài mới chỉ ở mức 1.
+Đầu vào là dữ liệu từ tác nhân vào tiến trình; đầu ra là dữ liệu từ tiến trình trả về tác nhân.
+
+E1 ↔ 1.0
+  ĐẦU VÀO: Cập nhật công ty, cửa hàng, danh mục
+  ĐẦU RA: Thông tin công ty, cửa hàng, danh mục
+
+E1 ↔ 2.0
+  ĐẦU VÀO: Thông tin điều phối bổ sung hàng
+  ĐẦU RA: Yêu cầu bổ sung hàng, trạng thái điều chuyển
+
+E2 ↔ 2.0
+  ĐẦU VÀO: Tra cứu tồn kho, ghi nhận điều chuyển
+  ĐẦU RA: Tồn kho trung tâm, thông tin điều chuyển
+
+E3 ↔ 2.0
+  ĐẦU VÀO: Tra cứu tồn kho, yêu cầu bổ sung hàng
+  ĐẦU RA: Tồn kho và tình trạng bổ sung hàng
+
+E3 ↔ 3.0
+  ĐẦU VÀO: Tra cứu, xác nhận, phân công, cập nhật trạng thái đơn
+  ĐẦU RA: Đơn trực tuyến, phân công và trạng thái đơn
+
+E4 ↔ 3.0
+  ĐẦU VÀO: Dữ liệu hóa đơn và cập nhật đơn được giao
+  ĐẦU RA: Hóa đơn và đơn trực tuyến được giao
+
+E5 ↔ 3.0
+  ĐẦU VÀO: Tra cứu sản phẩm, tồn kho; đặt đơn; theo dõi đơn, yêu cầu hủy đơn và trả hàng
+  ĐẦU RA: Sản phẩm, tồn kho, khuyến mãi; trạng thái đơn và yêu cầu hủy/trả hàng
+
+E3 ↔ 4.0
+  ĐẦU VÀO: Tra cứu thanh toán, xác nhận thu hộ COD
+  ĐẦU RA: Trạng thái thanh toán và thu hộ COD
+
+E4 ↔ 4.0
+  ĐẦU VÀO: Bản ghi thanh toán tại cửa hàng
+  ĐẦU RA: Kết quả ghi nhận thanh toán tại cửa hàng
+
+E5 ↔ 4.0
+  ĐẦU VÀO: Phương thức và thông tin thanh toán
+  ĐẦU RA: Kết quả ghi nhận thanh toán
+
+E1 ↔ 5.0
+  ĐẦU VÀO: Cấu hình khuyến mãi từ trụ sở và phạm vi cửa hàng
+  ĐẦU RA: Thông tin khuyến mãi từ trụ sở
+
+E3 ↔ 5.0
+  ĐẦU VÀO: Cấu hình, tra cứu khuyến mãi cửa hàng
+  ĐẦU RA: Khuyến mãi áp dụng tại cửa hàng
+
+E1 ↔ 6.0
+  ĐẦU VÀO: Tra cứu, cập nhật nhân viên theo quyền
+  ĐẦU RA: Thông tin nhân viên toàn công ty
+
+E3 ↔ 6.0
+  ĐẦU VÀO: Tra cứu nhân viên, hoa hồng cửa hàng
+  ĐẦU RA: Thông tin nhân viên, hoa hồng cửa hàng
+
+E4 ↔ 6.0
+  ĐẦU VÀO: Tra cứu hoa hồng cá nhân
+  ĐẦU RA: Lịch sử hoa hồng cá nhân
+
+E5 ↔ 7.0
+  ĐẦU VÀO: Tra cứu hạng thành viên
+  ĐẦU RA: Thông tin hạng thành viên
+
+E1 ↔ 8.0
+  ĐẦU VÀO: Tiêu chí báo cáo toàn công ty
+  ĐẦU RA: Báo cáo tổng hợp toàn công ty
+
+E3 ↔ 8.0
+  ĐẦU VÀO: Tiêu chí báo cáo cửa hàng
+  ĐẦU RA: Bảng điều khiển và báo cáo cửa hàng
+
+E4 ↔ 8.0
+  ĐẦU VÀO: Tiêu chí báo cáo bán hàng cá nhân
+  ĐẦU RA: Hiệu suất bán hàng cá nhân
+
+6. CÁC KHO DỮ LIỆU LOGIC
+D1: Công ty, cửa hàng và danh mục chung
+D2: Tồn kho, bổ sung hàng và điều chuyển
+D3: Đơn, hóa đơn và yêu cầu hủy/trả hàng
+D4: Bản ghi thanh toán
+D5: Cấu hình và phạm vi khuyến mãi
+D6: Nhân viên và bản ghi hoa hồng
+D7: Hồ sơ khách hàng và hạng thành viên
+
+7. GIỚI HẠN CỦA MÔ HÌNH
+Bộ sơ đồ phản ánh báo cáo nguồn ở trạng thái bản nháp, chưa phải đặc tả hoàn chỉnh để đưa vào vận hành. Cần giải quyết các điểm chưa rõ trước khi chốt luồng ca sử dụng chi tiết, máy trạng thái, lược đồ dữ liệu vật lý, logic giao dịch và tiêu chí nghiệm thu.

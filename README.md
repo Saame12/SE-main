@@ -23,17 +23,22 @@ Nếu cổng web bị chiếm, kiểm tra tiến trình đang dùng cổng trư�
 
 ## Đăng nhập demo
 
-| Tên đăng nhập | Vai trò | Phạm vi |
-| --- | --- | --- |
-| `hq` | Quản trị trụ sở | Toàn công ty |
-| `warehouse` | Nhân viên kho | Kho trung tâm |
-| `manager` | Quản lý | Sài Gòn |
-| `employee` | Nhân viên | Sài Gòn |
-| `manager2` | Quản lý | Hà Nội |
-| `employee2` | Nhân viên | Hà Nội |
-| `customer` | Khách hàng | Đơn hàng của chính mình |
+| Tên đăng nhập | Mật khẩu demo | Vai trò | Phạm vi | Đăng nhập |
+| --- | --- | --- | --- | --- |
+| `hq` | `QFz6Rjd3dYKHk8_2WUmQ` | Quản trị trụ sở | Toàn công ty | [Mở trang](http://127.0.0.1:3308/admin.html) |
+| `warehouse` | `QFz6Rjd3dYKHk8_2WUmQ` | Nhân viên kho | Kho trung tâm | [Mở trang](http://127.0.0.1:3308/warehouse.html) |
+| `manager` | `QFz6Rjd3dYKHk8_2WUmQ` | Quản lý cửa hàng | Sài Gòn | [Mở trang](http://127.0.0.1:3308/manager.html) |
+| `employee` | `QFz6Rjd3dYKHk8_2WUmQ` | Nhân viên cửa hàng | Sài Gòn | [Mở trang](http://127.0.0.1:3308/employee.html) |
+| `manager2` | `QFz6Rjd3dYKHk8_2WUmQ` | Quản lý cửa hàng | Hà Nội | [Mở trang](http://127.0.0.1:3308/manager.html) |
+| `employee2` | `QFz6Rjd3dYKHk8_2WUmQ` | Nhân viên cửa hàng | Hà Nội | [Mở trang](http://127.0.0.1:3308/employee.html) |
+| `customer` | `QFz6Rjd3dYKHk8_2WUmQ` | Khách hàng | Đơn của chính mình | [Mở trang](http://127.0.0.1:3308/shop) |
+| `demo.an` | `QFz6Rjd3dYKHk8_2WUmQ` | Khách hàng demo | Thân thiết | [Mở trang](http://127.0.0.1:3308/shop) |
+| `demo.binh` | `QFz6Rjd3dYKHk8_2WUmQ` | Khách hàng demo | Thành viên | [Mở trang](http://127.0.0.1:3308/shop) |
+| `demo.chi` | `QFz6Rjd3dYKHk8_2WUmQ` | Khách hàng demo | VIP | [Mở trang](http://127.0.0.1:3308/shop) |
 
-Mật khẩu demo được tạo ngẫu nhiên khi chạy migration và lưu tại **`DEMO_PASSWORD` trong `.env`**. Không ghi mật khẩu vào README hoặc Git. Nếu tự đặt `DEMO_PASSWORD` trước lần setup đầu tiên, dùng ít nhất 10 ký tự. Thay đổi biến này sau migration không đặt lại mật khẩu tài khoản đã tồn tại. Trụ sở có thể sửa mật khẩu của các tài khoản nhân viên khác trong màn hình Nhân viên.
+Bảng này dành cho bộ demo đồ án đang chạy trên máy, đã đối chiếu mật khẩu với database. Không tự đặt lại mật khẩu tài khoản đã được thay đổi.
+
+Mật khẩu demo tương ứng với `DEMO_PASSWORD` trong `.env`. Cài trên máy khác có thể tạo mật khẩu khác; đổi biến này sau khi tài khoản đã tồn tại không đặt lại mật khẩu cũ. Trụ sở có thể đổi mật khẩu nhân viên trong màn hình Nhân viên.
 
 Khách hàng đăng nhập/đăng ký tại trang mua sắm. Các cổng nhân sự có trang đăng nhập riêng:
 
